@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+  <!-- 引入配置文件 -->  
+  <properties resource="datasource.properties"/> 
+  <!-- 数据库驱动包位置 -->  
+  <classPathEntry  
+      location="D:\workspace_new\OriginalPack\src\main\webapp\WEB-INF\lib\ojdbc6.jar" />
+  <context id="oracle_original" defaultModelType="flat" targetRuntime="MyBatis3Simple">
+  	
+  	<!-- 生成的Java文件的编码 -->
+    <property name="javaFileEncoding" value="UTF-8"/>
+    <!-- 格式化java代码 -->
+    <property name="javaFormatter" value="org.mybatis.generator.api.dom.DefaultJavaFormatter"/>
+    <!-- 格式化XML代码 -->
+    <property name="xmlFormatter" value="org.mybatis.generator.api.dom.DefaultXmlFormatter"/>
+  	
+    <jdbcConnection connectionURL="${ds2.url}" driverClass="${ds2.driverClassName}" password="${ds2.password}" userId="${ds2.username}" />
+    <javaModelGenerator targetPackage="com.huawei.act.model.businessShare" targetProject="ActPortal/src/main/java" />
+    <sqlMapGenerator targetPackage="com.huawei.act.oramapper.businessShare" targetProject="ActPortal/src/main/java" />
+    <javaClientGenerator targetPackage="com.huawei.act.oramapper.businessShare" targetProject="ActPortal/src/main/java" type="XMLMAPPER" />
+    <table tableName="ES_BUSSHARE_SHOPMARK" domainObjectName="ShopMark"></table>
+    
+  </context>
+</generatorConfiguration>
