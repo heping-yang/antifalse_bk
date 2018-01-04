@@ -2,6 +2,8 @@ package com.yinqiao.af;
 
 import org.junit.Test;
 
+import com.yinqiao.af.utils.SmsSendUtil;
+
 public class TestClass {
 
 	@Test
@@ -11,5 +13,10 @@ public class TestClass {
 		System.out.println(out_trade_no);
 		System.out.println(orderId);
 		System.out.println(orderId.length());
+	}
+	
+	public static void main(String[] args) {
+		//System.out.println(String.valueOf((int)((Math.random()*9+1)*100000)));
+		System.out.println(SmsSendUtil.SendSms("15296977700", String.valueOf((int)((Math.random()*9+1)*100000))));
 	}
 }

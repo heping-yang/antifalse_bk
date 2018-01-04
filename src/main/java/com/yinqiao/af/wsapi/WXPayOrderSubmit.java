@@ -161,7 +161,7 @@ public class WXPayOrderSubmit extends BaseAction{
 			retparamMap.put("trade_type","JSAPI"); 
 			retparamMap.put("product_id", reqbody.getString("PRODID")); 
 			retparamMap.put("mch_id", Configuration.MCH_ID); //商户id
-			retparamMap = WeixinPaymentUtil.paymentSign(retparamMap);			
+			retparamMap = WeixinPaymentUtil.paymentSign(retparamMap);
 		}catch(Exception e){
 			e.printStackTrace();
 		}

@@ -12,7 +12,7 @@ import com.yinqiao.af.service.IPayDetailService;
 @Service("payDetailService")
 public class PayDetailServiceImpl implements IPayDetailService{
 
-	@Autowired
+//	@Autowired
 //	private PayDetailMapper payDetailMapper;
 	
 	public int insert(PayDetail record) {

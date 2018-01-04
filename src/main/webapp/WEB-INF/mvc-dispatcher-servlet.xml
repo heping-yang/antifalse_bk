@@ -13,26 +13,9 @@
 	<mvc:annotation-driven />
 
 	<!-- 自动扫描包 -->
-	<context:component-scan base-package="com.huawei.auth.controller" />
-	<context:component-scan base-package="com.huawei.auth.service" />
-	<context:component-scan base-package="com.huawei.auth.api" />
-	
-	<!-- 配置freeMarker的模板路径 -->  
-	<bean id="freeMarkerConfigurer" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">  
-	   <property name="templateLoaderPath" value="WEB-INF/ftl/" />  
-	   <property name="defaultEncoding" value="UTF-8" />  
-	</bean>
-	<!-- freemarker视图解析器 -->  
-	<bean class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">  
-	   <property name="suffix" value=".ftl" />  
-	   <property name="contentType" value="text/html;charset=UTF-8" />  
-	   <!-- 此变量值为pageContext.request, 页面使用方法：rc.contextPath -->  
-	   <property name="requestContextAttribute" value="rc" />  
-	</bean>
-	
-	<bean id="freemarkerUtil" class="com.huawei.auth.utils.FreemarkerUtil">  
-	   <property name="freeMarkerConfigurer" ref="freeMarkerConfigurer"></property> 
-	</bean>
+	<context:component-scan base-package="com.yinqiao.af.controller" />
+	<context:component-scan base-package="com.yinqiao.af.service" />
+	<context:component-scan base-package="com.yinqiao.af.wsapi" />
 	
 	<bean
 		class="org.springframework.web.servlet.view.InternalResourceViewResolver">

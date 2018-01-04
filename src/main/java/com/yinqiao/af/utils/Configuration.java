@@ -2,17 +2,19 @@ package com.yinqiao.af.utils;
 
 public class Configuration{
 	
-	public static String APPID  = "wx8feec63e9ca4bfbb";
-	
 	//ws通过code换取用户session信息
 	public static String WX_GETOPENID_URL = "https://api.weixin.qq.com/sns/jscode2session";
 	
 	//ws支付统一下单接口地址
 	public static String PAY_ORDER_URL = "https://api.mch.weixin.qq.com/pay/unifiedorder";
 	
-	public static String SECRET;
+	public static String APPID  = "wxfbcd9d55b2599597";
+	
+	public static String SECRET = "ec362206238ff29291f8310ce0e2ce3c";
 	
 	public static String MCH_ID = "1220667501";
+	
+	public static String SMS_URL = "http://api.sms.cn/sms/";
 	
 	public static String TOKEN;
 	
