@@ -25,12 +25,8 @@ public class OprShopIndex extends BaseAction{
 	
 	
 	
-	public void queryIndex(HttpServletRequest request, HttpServletResponse response, JSONObject param, ModelMap model)
+	public String queryIndex(HttpServletRequest request, HttpServletResponse response, JSONObject param, ModelMap model)
 			throws TemplateModelException {
-		
-		Retinfo retinfo = new Retinfo();
-		retinfo.setRetCode("100");
-		retinfo.setRetMsg("Success");
 		
 		JSONObject reqbody = param.getJSONObject("reqbody");
 		logger.info("reqbody is {}", reqbody);
@@ -38,11 +34,8 @@ public class OprShopIndex extends BaseAction{
 		String userType = (String)request.getSession().getAttribute("userType");
 				
 		JSONObject req = new JSONObject();
-//		req.put("shop", shopIndexService.selectByPrimaryKey(shopId));
 		req.put("userType", userType);
-		
-		model.put("retinfo", retinfo);
-		model.put("body", req.toString());
+		return req.toString();
 	}
 
 	public void queryShop(HttpServletRequest request, HttpServletResponse response, JSONObject param, ModelMap model)

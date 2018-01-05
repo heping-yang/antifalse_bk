@@ -7,7 +7,6 @@
   <classPathEntry  
       location="D:\workspace_new\OriginalPack\src\main\webapp\WEB-INF\lib\ojdbc6.jar" />
   <context id="oracle_original" defaultModelType="flat" targetRuntime="MyBatis3Simple">
-  	
   	<!-- 生成的Java文件的编码 -->
     <property name="javaFileEncoding" value="UTF-8"/>
     <!-- 格式化java代码 -->
@@ -15,11 +14,10 @@
     <!-- 格式化XML代码 -->
     <property name="xmlFormatter" value="org.mybatis.generator.api.dom.DefaultXmlFormatter"/>
   	
-    <jdbcConnection connectionURL="${ds2.url}" driverClass="${ds2.driverClassName}" password="${ds2.password}" userId="${ds2.username}" />
-    <javaModelGenerator targetPackage="com.huawei.act.model.businessShare" targetProject="ActPortal/src/main/java" />
-    <sqlMapGenerator targetPackage="com.huawei.act.oramapper.businessShare" targetProject="ActPortal/src/main/java" />
-    <javaClientGenerator targetPackage="com.huawei.act.oramapper.businessShare" targetProject="ActPortal/src/main/java" type="XMLMAPPER" />
-    <table tableName="ES_BUSSHARE_SHOPMARK" domainObjectName="ShopMark"></table>
-    
+    <jdbcConnection connectionURL="${ds1.url}" driverClass="${ds1.driverClassName}" password="${ds1.password}" userId="${ds1.username}" />
+    <javaModelGenerator targetPackage="com.yinqiao.af.model" targetProject="antifalse/src/main/java" />
+    <sqlMapGenerator targetPackage="com.yinqiao.af.mapper" targetProject="antifalse/src/main/java" />
+    <javaClientGenerator targetPackage="com.yinqiao.af.mapper" targetProject="antifalse/src/main/java" type="XMLMAPPER" />
+    <table tableName="AF_USER_EXAM_HISTORY" domainObjectName="ExamHistory"></table>
   </context>
 </generatorConfiguration>

@@ -13,6 +13,7 @@
 	<mvc:annotation-driven />
 
 	<!-- 自动扫描包 -->
+	<context:component-scan base-package="com.yinqiao.af.business" />
 	<context:component-scan base-package="com.yinqiao.af.controller" />
 	<context:component-scan base-package="com.yinqiao.af.service" />
 	<context:component-scan base-package="com.yinqiao.af.wsapi" />
