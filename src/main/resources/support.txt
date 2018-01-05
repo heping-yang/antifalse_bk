@@ -1,0 +1,14 @@
+1、域名 		http://www.nxyqedu.com/			ip:202.100.98.55
+2、短信平台		
+3、服务器		tm，id341694348，密码5034710,服务器密码：Web_SvR_Yqedu_502
+4、小程序公众号		nxyqedu@163.com，密码nxyqedu5034710
+
+weblogic 用户名：weblogic，密码：WebLogic0212
+oracle: yqeduDB 用户名：yqedu 密码：Orc_Yqdb_0316
+
+域名，中国互联
+www.163ns.com.cn  nxyq  密码5034710
+
+数据库密码：Orc_Yqdb_0316
+
+https://www.wosign.com/support/ssl-weblogic-1.htm
