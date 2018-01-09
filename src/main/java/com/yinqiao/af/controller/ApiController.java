@@ -32,7 +32,7 @@ public class ApiController implements ApplicationContextAware{
 	private static Logger logger = LoggerFactory.getLogger(ApiController.class);
 
 	@ResponseBody
-	@RequestMapping(value = "/{process_code}", method = RequestMethod.GET)
+	@RequestMapping(value = "/{process_code}", method = RequestMethod.GET , produces = "application/json; charset=utf-8")
 	public String get(HttpServletRequest request, HttpServletResponse response, ModelMap model, @PathVariable String process_code) {
 		try {
 			String method = request.getParameter("method");
@@ -46,8 +46,6 @@ public class ApiController implements ApplicationContextAware{
 			if(StringUtil.checkNull(method)){
 				method = "receive";
 			}
-			response.setContentType("text/json;charset=UTF-8");
-			response.setCharacterEncoding("UTF-8");
 			BaseAction action = (BaseAction)applicationContext.getBean(process_code+"Api");
 			Class<? extends BaseAction> clz =action.getClass();
 			for(Method m : clz.getMethods()){

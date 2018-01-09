@@ -1,6 +1,7 @@
 package com.yinqiao.af.mapper;
 
 import com.yinqiao.af.model.QuestionBank;
+
 import java.util.List;
 
 public interface QuestionBankMapper {
@@ -43,4 +44,8 @@ public interface QuestionBankMapper {
      * @mbg.generated Fri Jan 05 11:21:28 CST 2018
      */
     int updateByPrimaryKey(QuestionBank record);
+    
+    String isExist(String questionId);
+    
+	String getExamCount(String examId);
 }

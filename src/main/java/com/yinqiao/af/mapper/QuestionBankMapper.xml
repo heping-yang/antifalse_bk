@@ -82,4 +82,16 @@
     select QUESTION_ID, EXAM_ID, TYPE, CONTENT, PICFLAG, ANSWER, STANDARD, SCORE
     from AF_QUESTION_BANK
   </select>
+  
+  <select id="isExist" resultType="java.lang.String" parameterType="java.lang.String">
+  	select count(*)
+	    from AF_QUESTION_BANK
+	    where QUESTION_ID = #{questionId,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="getExamCount" resultType="java.lang.String" parameterType="java.lang.String">
+  	select count(*)
+    from AF_QUESTION_BANK
+    where EXAM_ID = #{examId,jdbcType=VARCHAR}
+  </select>
 </mapper>
