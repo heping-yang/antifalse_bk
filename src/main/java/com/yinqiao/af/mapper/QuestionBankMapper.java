@@ -3,6 +3,7 @@ package com.yinqiao.af.mapper;
 import com.yinqiao.af.model.QuestionBank;
 
 import java.util.List;
+import java.util.Map;
 
 public interface QuestionBankMapper {
     /**
@@ -48,4 +49,6 @@ public interface QuestionBankMapper {
     String isExist(String questionId);
     
 	String getExamCount(String examId);
+	
+	List<Map> getQuestionCount(String examId);
 }

@@ -1,6 +1,7 @@
 package com.yinqiao.af.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.yinqiao.af.model.QuestionBank;
 
@@ -20,4 +21,6 @@ public interface IQuestionBankService {
     String isExist(String questionId);
     
 	String getExamCount(String examId);
+	
+	List<Map> getQuestionCount(String examId);
 }

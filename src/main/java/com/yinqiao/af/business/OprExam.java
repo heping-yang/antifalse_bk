@@ -1,10 +1,11 @@
 package com.yinqiao.af.business;
 
-import java.awt.List;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,7 +21,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.yinqiao.af.model.ExamHistory;
 import com.yinqiao.af.model.QuestionBank;
+import com.yinqiao.af.service.IExamHistoryService;
 import com.yinqiao.af.service.IExamService;
 import com.yinqiao.af.service.IQuestionBankService;
 
@@ -35,6 +38,9 @@ public class OprExam extends BaseAction{
 	@Autowired
 	private IQuestionBankService questionBankService;
 	
+	@Autowired
+	private IExamHistoryService examHistoryService;
+	
 	public String list(HttpServletRequest request, HttpServletResponse response){
 		JSONObject req = new JSONObject();
 		System.out.println(JSONArray.fromObject(examService.selectAll()).toString());
@@ -46,12 +52,69 @@ public class OprExam extends BaseAction{
 		JSONObject req = new JSONObject();
 		String examId = request.getParameter("examId");
 		String index = request.getParameter("index");
+		String userAnwser = request.getParameter("userAnwser");
+		String result = request.getParameter("result");
+		String hId = request.getParameter("hId");
 		System.out.println(JSONArray.fromObject(examService.selectAll()).toString());
 		req.put("question", JSONArray.fromObject(modelConvert(questionBankService.selectByPrimaryKey(getNextQId(examId,index,1)))).toString());
 		req.put("index", getNextIndex(index));
 		req.put("total", questionBankService.getExamCount(examId));
 		req.put("lastFlag", questionBankService.isExist(getNextQId(examId,index,2)));
+		req.put("questionCnt", questionBankService.getQuestionCount(examId));
+		if (StringUtils.isNotEmpty(index)) {
+			examHistoryService.insert(getNewExamHistory(examId, "001"));
+		}else{
+			this.UpdateExamHistory(hId,index,result,userAnwser);
+		}
 		return req.toString();
+	}
+	
+	private void UpdateExamHistory(String hId,String index,String result,String userAnwser){
+		ExamHistory examHistory = examHistoryService.selectByPrimaryKey(hId);
+		JSONObject jsonObject = JSONObject.fromObject(examHistory.getAnswerRecord());
+		((JSONObject)jsonObject.getJSONArray("data").get(Integer.parseInt(index)-1)).put("answer",userAnwser);
+		((JSONObject)jsonObject.getJSONArray("data").get(Integer.parseInt(index)-1)).put("result",result);
+		examHistory.setAnswerRecord(jsonObject.toString());
+		examHistory.setUpdateTime(new Date());
+		examHistoryService.updateByPrimaryKey(examHistory);
+	}
+	
+	private ExamHistory getNewExamHistory(String examId,String hId){
+		ExamHistory examHistory = new ExamHistory();
+		examHistory.setCreateTime(new Date());
+		examHistory.setExamId(examId);
+		examHistory.sethId(hId);
+		//examHistory.setQuestionId(questionId);
+		//.setTotalscore("");
+		//examHistory.setUpdateTime(updateTime);
+		//examHistory.setUsedtime(usedtime);
+		//examHistory.setUserId(userId);
+		examHistory.setAnswerRecord(getNewAnswerRecord(examId));
+		return examHistory;
+	}
+	
+	private String getNewAnswerRecord(String examId){
+        JSONObject jsonObject = new JSONObject();  
+        jsonObject.put("ret", new Integer(0));  
+        jsonObject.put("msg", "query");  
+        JSONArray jsonArray = new JSONArray();  
+        //{"deviceid":"SH01H20130002","latitude":"32.140","longitude":"118.640","speed":"","orientation":""}  
+        int count = 1;
+		List<Map> list = questionBankService.getQuestionCount(examId);
+		for (Map map : list) {
+			int i = Integer.parseInt(map.get("QUESTIONCNT").toString());
+			for (int j = 0; j < i; j++) {
+				JSONObject dataelem=new JSONObject();  
+		        dataelem.put("type", map.get("TYPE").toString());
+		        dataelem.put("index", count);
+		        dataelem.put("answer", "");  
+		        dataelem.put("result", "");
+		        count++;
+		        jsonArray.add(dataelem);  
+			}
+		}
+        jsonObject.element("data", jsonArray);
+        return jsonObject.toString();
 	}
 	
 	private String getNextQId(String examId,String index,int num){
@@ -125,13 +188,39 @@ public class OprExam extends BaseAction{
 	}
 	
 	public static void main(String[] args) {
-		try {
-			System.out.println(URLEncoder.encode("{comboType:daycard1}","UTF-8"));
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		String questionId = "T01001";
-		System.out.println(questionId.substring(0,3));
+//		try {
+//			System.out.println(URLEncoder.encode("{comboType:daycard1}","UTF-8"));
+//		} catch (UnsupportedEncodingException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		String questionId = "T01001";
+//		System.out.println(questionId.substring(0,3));
+        JSONObject jsonObject = new JSONObject();  
+        jsonObject.put("ret", new Integer(0));  
+        jsonObject.put("msg", "query");  
+        JSONObject dataelem1=new JSONObject();  
+        //{"deviceid":"SH01H20130002","latitude":"32.140","longitude":"118.640","speed":"","orientation":""}  
+        dataelem1.put("type", "1");
+        dataelem1.put("index", "1");
+        dataelem1.put("answer", "A");  
+        dataelem1.put("result", "1");  
+   
+        JSONObject dataelem2=new JSONObject();  
+        //{"deviceid":"SH01H20130002","latitude":"32.140","longitude":"118.640","speed":"","orientation":""}  
+        dataelem2.put("type", "1");
+        dataelem2.put("index", "2");
+        dataelem2.put("answer", "A");  
+        dataelem2.put("result", "1");    
+          
+     // 返回一个JSONArray对象  
+        JSONArray jsonArray = new JSONArray();  
+          
+        jsonArray.add(0, dataelem1);  
+        jsonArray.add(1, dataelem2);  
+        jsonObject.element("data", jsonArray); 
+        ((JSONObject)jsonObject.getJSONArray("data").get(0)).put("answer","C");
+        System.out.println(jsonObject.getJSONArray("data").get(0));
+        System.out.println(jsonObject);
 	}
 }

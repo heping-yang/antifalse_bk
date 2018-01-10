@@ -1,6 +1,7 @@
 package com.yinqiao.af.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,5 +41,9 @@ public class QuestionBankServiceImpl implements IQuestionBankService {
 	}
 	public String getExamCount(String examId){
 		return questionBankMapper.getExamCount(examId);
+	}
+
+	public List<Map> getQuestionCount(String examId) {
+		return questionBankMapper.getQuestionCount(examId);
 	}
 }
