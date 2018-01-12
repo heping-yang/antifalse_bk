@@ -1,7 +1,5 @@
 package com.yinqiao.af.business;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -15,7 +13,6 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
-import org.aspectj.weaver.patterns.TypePatternQuestions.Question;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,23 +45,33 @@ public class OprExam extends BaseAction{
 		return req.toString();
 	}
 	
+	public String queryAnwsers(HttpServletRequest request, HttpServletResponse response){
+		JSONObject req = new JSONObject();
+		String hId = request.getParameter("hId");
+		req.put("anwsers", JSONArray.fromObject(examHistoryService.selectByPrimaryKey(hId)).toString());
+		return req.toString();
+	}
+	
 	public String queryNextQuestion(HttpServletRequest request, HttpServletResponse response){
 		JSONObject req = new JSONObject();
 		String examId = request.getParameter("examId");
 		String index = request.getParameter("index");
 		String userAnwser = request.getParameter("userAnwser");
-		String result = request.getParameter("result");
+		String result = request.getParameter("userResult");
 		String hId = request.getParameter("hId");
+		String type = request.getParameter("type");
 		System.out.println(JSONArray.fromObject(examService.selectAll()).toString());
 		req.put("question", JSONArray.fromObject(modelConvert(questionBankService.selectByPrimaryKey(getNextQId(examId,index,1)))).toString());
 		req.put("index", getNextIndex(index));
 		req.put("total", questionBankService.getExamCount(examId));
 		req.put("lastFlag", questionBankService.isExist(getNextQId(examId,index,2)));
 		req.put("questionCnt", questionBankService.getQuestionCount(examId));
-		if (StringUtils.isNotEmpty(index)) {
-			examHistoryService.insert(getNewExamHistory(examId, "001"));
-		}else{
-			this.UpdateExamHistory(hId,index,result,userAnwser);
+		if ("select".equals(type)) {
+			if (!"0".equals(index)) {
+				this.UpdateExamHistory(hId,index,result,userAnwser);
+			}else{
+				examHistoryService.insert(getNewExamHistory(examId, hId));
+			}
 		}
 		return req.toString();
 	}
@@ -72,7 +79,7 @@ public class OprExam extends BaseAction{
 	private void UpdateExamHistory(String hId,String index,String result,String userAnwser){
 		ExamHistory examHistory = examHistoryService.selectByPrimaryKey(hId);
 		JSONObject jsonObject = JSONObject.fromObject(examHistory.getAnswerRecord());
-		((JSONObject)jsonObject.getJSONArray("data").get(Integer.parseInt(index)-1)).put("answer",userAnwser);
+		((JSONObject)jsonObject.getJSONArray("data").get(Integer.parseInt(index)-1)).put("anwser",userAnwser);
 		((JSONObject)jsonObject.getJSONArray("data").get(Integer.parseInt(index)-1)).put("result",result);
 		examHistory.setAnswerRecord(jsonObject.toString());
 		examHistory.setUpdateTime(new Date());
@@ -107,7 +114,7 @@ public class OprExam extends BaseAction{
 				JSONObject dataelem=new JSONObject();  
 		        dataelem.put("type", map.get("TYPE").toString());
 		        dataelem.put("index", count);
-		        dataelem.put("answer", "");  
+		        dataelem.put("anwser", "");  
 		        dataelem.put("result", "");
 		        count++;
 		        jsonArray.add(dataelem);  

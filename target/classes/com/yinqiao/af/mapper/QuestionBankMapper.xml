@@ -96,6 +96,6 @@
   </select>
   
   <select id="getQuestionCount" resultType="java.util.Map" parameterType="java.lang.String">
-  	select t.type, count(t.question_id) as questioncnt from AF_QUESTION_BANK t where t.exam_id = 'T01'group by t.type
+  	select t.type, count(t.question_id) as questioncnt from AF_QUESTION_BANK t where t.exam_id = 'T01'group by t.type order by t.type
   </select>
 </mapper>
