@@ -46,4 +46,8 @@ public class QuestionBankServiceImpl implements IQuestionBankService {
 	public List<Map> getQuestionCount(String examId) {
 		return questionBankMapper.getQuestionCount(examId);
 	}
+
+	public String getScore(String rights) {
+		return questionBankMapper.getScore(rights);
+	}
 }

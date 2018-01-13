@@ -60,13 +60,17 @@ public class OprExam extends BaseAction{
 		String result = request.getParameter("userResult");
 		String hId = request.getParameter("hId");
 		String type = request.getParameter("type");
+		int offset = 0;
 		System.out.println(JSONArray.fromObject(examService.selectAll()).toString());
-		req.put("question", JSONArray.fromObject(modelConvert(questionBankService.selectByPrimaryKey(getNextQId(examId,index,1)))).toString());
+		if ("1".equals(questionBankService.isExist(getNextQId(examId,index,1)))) {
+			offset = 1;
+		}
+		req.put("question", JSONArray.fromObject(modelConvert(questionBankService.selectByPrimaryKey(getNextQId(examId,index,offset)))).toString());
 		req.put("index", getNextIndex(index));
 		req.put("total", questionBankService.getExamCount(examId));
-		req.put("lastFlag", questionBankService.isExist(getNextQId(examId,index,2)));
+		req.put("lastFlag", questionBankService.isExist(getNextQId(examId,index,offset+1)));
 		req.put("questionCnt", questionBankService.getQuestionCount(examId));
-		if ("select".equals(type)) {
+		if (!"select".equals(type)) {
 			if (!"0".equals(index)) {
 				this.UpdateExamHistory(hId,index,result,userAnwser);
 			}else{
@@ -74,6 +78,69 @@ public class OprExam extends BaseAction{
 			}
 		}
 		return req.toString();
+	}
+	
+	public String queryExamReport(HttpServletRequest request, HttpServletResponse response){
+		JSONObject req = new JSONObject();
+		String hId = request.getParameter("hId");
+		makeReport(hId);
+		req.put("report", JSONArray.fromObject(examHistoryService.selectByPrimaryKey(hId)).toString());
+		return req.toString();
+	}
+	
+	private void makeReport(String hId){
+		ExamHistory examHistory = examHistoryService.selectByPrimaryKey(hId);
+		if (examHistory.getTotalscore() == null || "".equals(examHistory.getTotalscore())) {
+			JSONObject jsonObject = JSONObject.fromObject(examHistory.getAnswerRecord());
+			JSONArray jsonArray = jsonObject.getJSONArray("data");
+			int rightCnt = 0;
+			int wrongCnt = 0;
+			String score = "0";
+			String tempStr = "";
+			for (int i = 0; i < jsonArray.size(); i++) {
+				JSONObject job = jsonArray.getJSONObject(i);
+				if ("1".equals(job.get("result"))) {
+					rightCnt++;
+					tempStr += getNextQId(examHistory.getExamId(),job.get("index")+"",0) + ",";
+				}else {
+					wrongCnt++;
+				}
+			}
+			System.out.println(tempStr);
+			if (!"".equals(tempStr)) {
+				tempStr = tempStr.substring(0,tempStr.length()-1);
+				score = questionBankService.getScore(tempStr);
+			}
+			System.out.println(score);
+			jsonObject.put("rightCnt",rightCnt);
+			jsonObject.put("wrongCnt",wrongCnt);
+			examHistory.setAnswerRecord(jsonObject.toString());
+			examHistory.setTotalscore(score);
+			examHistoryService.updateByPrimaryKey(examHistory);
+		}
+	}
+	
+	public String queryExamWrongAnalysis(HttpServletRequest request, HttpServletResponse response){
+		JSONObject req = new JSONObject();
+		String hId = request.getParameter("hId");
+		req.put("wrongs", makeAnalysis(hId).toString());
+		req.put("report", JSONArray.fromObject(examHistoryService.selectByPrimaryKey(hId)).toString());
+		return req.toString();
+	}
+	
+	private JSONArray makeAnalysis(String hId){
+		ExamHistory examHistory = examHistoryService.selectByPrimaryKey(hId);
+		JSONObject jsonObject = JSONObject.fromObject(examHistory.getAnswerRecord());
+		JSONArray jsonArray = jsonObject.getJSONArray("data");
+		for (int i = 0; i < jsonArray.size(); i++) {
+			JSONObject job = jsonArray.getJSONObject(i);
+			QuestionBank qBank = questionBankService.selectByPrimaryKey(getNextQId(examHistory.getExamId(),job.get("index")+"",0));					
+			qBank = this.modelConvert(qBank);
+			job.put("standard", qBank.getStandard());
+			job.put("content", qBank.getContent());
+			job.put("answer", qBank.getAnswer());
+		}
+		return jsonArray;
 	}
 	
 	private void UpdateExamHistory(String hId,String index,String result,String userAnwser){
@@ -102,10 +169,9 @@ public class OprExam extends BaseAction{
 	
 	private String getNewAnswerRecord(String examId){
         JSONObject jsonObject = new JSONObject();  
-        jsonObject.put("ret", new Integer(0));  
-        jsonObject.put("msg", "query");  
+        jsonObject.put("rightCnt", "");
+        jsonObject.put("wrongCnt", "");  
         JSONArray jsonArray = new JSONArray();  
-        //{"deviceid":"SH01H20130002","latitude":"32.140","longitude":"118.640","speed":"","orientation":""}  
         int count = 1;
 		List<Map> list = questionBankService.getQuestionCount(examId);
 		for (Map map : list) {
@@ -229,5 +295,8 @@ public class OprExam extends BaseAction{
         ((JSONObject)jsonObject.getJSONArray("data").get(0)).put("answer","C");
         System.out.println(jsonObject.getJSONArray("data").get(0));
         System.out.println(jsonObject);
+        
+        String temp = "124563,12453364,";
+        System.out.println(temp.substring(0,temp.length() -1 ));
 	}
 }

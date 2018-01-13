@@ -12,7 +12,7 @@ public class Configuration{
 	
 	public static String SECRET = "ec362206238ff29291f8310ce0e2ce3c";
 	
-	public static String MCH_ID = "1220667501";
+	public static String MCH_ID = "1496240462";
 	
 	public static String SMS_URL = "http://api.sms.cn/sms/";
 	

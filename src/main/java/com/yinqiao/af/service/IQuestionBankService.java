@@ -23,4 +23,7 @@ public interface IQuestionBankService {
 	String getExamCount(String examId);
 	
 	List<Map> getQuestionCount(String examId);
+	
+	//根据做对答案参数获取试题分数
+	String getScore(String rights);
 }
