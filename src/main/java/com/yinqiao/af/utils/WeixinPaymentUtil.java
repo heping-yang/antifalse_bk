@@ -1,5 +1,8 @@
 package com.yinqiao.af.utils;
 
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -27,7 +30,8 @@ public class WeixinPaymentUtil{
 
 	private static Logger log = LoggerFactory.getLogger(WeixinPaymentUtil.class);
 	
-	private static String key = "7a319c459e0d510a4904bd15a63e1c28";
+	//支付秘钥
+	private static String key = "2Hfkw5jLdHTTSxodcWR3eol4BRuRx0GE";
 
 	/**
 	 * 拼接签名参数
@@ -57,11 +61,12 @@ public class WeixinPaymentUtil{
 	public static Map<String, String> paymentSign(Map<String,String> paramMap ){
 		String nonce_str =  JSDKUtil.getNoncestr();
 		paramMap.put("nonce_str", nonce_str);
-		log.debug("Generate nonce_str set to :{}.",nonce_str);
+		log.info("Generate nonce_str set to :{}.",nonce_str);
 		String signStr = createLinkString(paramMap);
-		log.debug("Generate signStr set to :{}.",signStr+"&key="+key);
-		String signedStr = JSDKUtil.encodeByMD5(signStr+"&key="+key);
-		log.debug("Generate signedStr set to :{}.",signedStr);
+		log.info("Generate signStr set to :{}.",signStr+"&key="+key);
+		signStr += "&key="+key;
+		String signedStr = JSDKUtil.encodeByMD5(signStr);
+		log.info("Generate signedStr set to :{}.",signedStr);
 		paramMap.put("sign", signedStr.toUpperCase());
 		return paramMap;
 	}
@@ -185,5 +190,9 @@ public class WeixinPaymentUtil{
 			clientIp = clientIp.split(",")[0];
 		}
 		return clientIp;
+	}
+	
+	public static void main(String[] args) {
+		System.out.println(JSDKUtil.encodeByMD5("appid=wxfbcd9d55b2599597&body=365购买&detail=365&mch_id=1496240462&nonce_str=YNfYJjyoCzCtjIC&notify_url=https://www.nxyqedu.com/antifalse/wxPay/asynchronousNotify&openid=oUyEW0d8q0VJqZYHKpipWsBNa1Ec&out_trade_no=3f30424e645e9891a3acc6b008e8b579&product_id=pro01&spbill_create_ip=10.223.24.18&total_fee=1&trade_type=JSAPI&key=2Hfkw5jLdHTTSxodcWR3eol4BRuRx0GE"));
 	}
 }

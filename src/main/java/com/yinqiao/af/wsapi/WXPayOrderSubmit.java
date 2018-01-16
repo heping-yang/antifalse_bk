@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
@@ -31,7 +32,6 @@ import com.yinqiao.af.utils.WeixinPaymentUtil;
  * 活动支付订单提交接口 ordersubmitopen
  */
 
-@SuppressWarnings("restriction")
 @Service("wsordersubmitApi")
 public class WXPayOrderSubmit extends BaseAction{
 
@@ -47,40 +47,35 @@ public class WXPayOrderSubmit extends BaseAction{
 	 * @param param
 	 * @param model
 	 */
-	public void receive(HttpServletRequest request, HttpServletResponse response, JSONObject param, ModelMap model) {
+	public String payOrder(HttpServletRequest request, HttpServletResponse response) {
+		JSONObject req = new JSONObject();
 		try {
 			System.out.println("ordersubmitApi");
-			JSONObject reqbody = param.getJSONObject("reqbody");
-
-			Retinfo retinfo = new Retinfo();
-			retinfo.setRetCode("100");
-			retinfo.setRetMsg("Success");
-			
-			String openid = reqbody.getString("openid");
-
 			PayDetail orderInfo = new PayDetail();
-			orderInfo.setAmount(Integer.parseInt(reqbody.getString("PRODFEE")));
-			orderInfo.setOrderType(reqbody.getString("PRODTYPE"));
-			orderInfo.setOrderid(reqbody.getString("ORDERID"));
-			orderInfo.setPhone("");
-			orderInfo.setDescription(reqbody.getString("PRODDESC"));
+			orderInfo.setAmount(Integer.parseInt(request.getParameter("prodFee")));
+			orderInfo.setProductId(request.getParameter("productId"));
+			orderInfo.setProductName(request.getParameter("productName"));
+			orderInfo.setOrderId(request.getParameter("orderId"));
+			orderInfo.setPhone(request.getParameter("phone"));
+			orderInfo.setDescription(request.getParameter("proddesc"));
+			orderInfo.setOpenid(request.getParameter("openid"));
 			orderInfo.setStatus("0");
 			orderInfo.setCreateTime(new Date());
 			orderInfo.setUpdateTime(new Date());
 			//查询 已有支付信息 做更新 否则增加
-			Map<String,Object> payMap = payDetailService.queryPayDetailById(orderInfo.getOrderid());
-			if(null != payMap && payMap.size()>0){
-				payDetailService.update(orderInfo);
-			}else{				
-				payDetailService.insert(orderInfo);
-			}
-			model.put("body", JSONObject.fromObject(getJSpay(openid,reqbody,orderInfo)).toString());
+//			Map<String,Object> payMap = payDetailService.queryPayDetailById(orderInfo.getOrderId());
+//			if(null != payMap && payMap.size()>0){
+//				payDetailService.update(orderInfo);
+//			}else{
+//				payDetailService.insert(orderInfo);
+//			}
+			req.put("body", JSONObject.fromObject(getJSpay(orderInfo)).toString());
 			logger.info("=========支付订单=========="+orderInfo.toString());
-			
-			model.put("retinfo", retinfo);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		System.out.println("返回"+req.toString());
+		return req.toString();
 	}
 
 	/**
@@ -92,10 +87,10 @@ public class WXPayOrderSubmit extends BaseAction{
 	 * @return
 	 * @throws IOException
 	 */
-	public Map<String,String> getJSpay(String openid, JSONObject reqbody, PayDetail orderInfo) throws IOException{		
+	public Map<String,String> getJSpay(PayDetail orderInfo) throws IOException{		
 		logger.info("@@@@@ enter jsapi pay :{}");
 		try{
-			String returnXml = HttpsRequestUtil.httpsRequestInner(Configuration.PAY_ORDER_URL, HttpsRequestUtil.POST,getOrderInfoMap(reqbody,orderInfo,openid));
+			String returnXml = HttpsRequestUtil.httpsRequestInner(Configuration.PAY_ORDER_URL, HttpsRequestUtil.POST,getOrderInfoMap(orderInfo));
 			logger.info("The Xml info fetched from wechat server is :{}.",returnXml);
 			if (!WeixinPaymentUtil.checkSign(returnXml)){
 				Map<String,String> returnMap = WeixinPaymentUtil.parseXml(returnXml,"UTF-8");
@@ -132,6 +127,25 @@ public class WXPayOrderSubmit extends BaseAction{
 		}
 		return null;
 	}
+	
+	/**
+	 * 微信获取Openid
+	 */
+	public String getOpenid(HttpServletRequest request, HttpServletResponse response) throws IOException{		
+		logger.info("@@@@@ enter jsapi pay :{}");
+		String url = Configuration.WX_GETOPENID_URL;
+		url += "&js_code="+ request.getParameter("code");
+		try{
+			String returnXml = HttpsRequestUtil.httpsRequestInner(url, HttpsRequestUtil.GET,"");
+			logger.info("The Xml info fetched from wechat server is :{}.",returnXml);
+			return returnXml;
+		}catch(JSONException e){
+			logger.error(e.getMessage());
+		}catch (Exception e) {
+			logger.error(e.getMessage());
+		}
+		return null;
+	}
 
 	/**
 	 * 预下订单接口生成签名、生成参数map
@@ -144,32 +158,37 @@ public class WXPayOrderSubmit extends BaseAction{
 	 * @param syslog 日志
 	 * @throws Exception 
 	 */
-	public String getOrderInfoMap(JSONObject reqbody, PayDetail orderInfo, String openid){
+	public String getOrderInfoMap(PayDetail orderInfo){
 		Map<String, String> retparamMap = new HashMap<String,String>();		
-		String out_trade_no = orderInfo.getOrderid()+(int)((Math.random()*9+1)*100); //随机生成新的订单号，防止重复订单 
+		String out_trade_no = orderInfo.getOrderId()+(int)((Math.random()*9+1)*100); //随机生成新的订单号，防止重复订单 
+		System.out.println(out_trade_no);
 		try{
-			logger.info("getOrderInfoMap orderId()"+ orderInfo.getOrderid());
-			retparamMap.put("appid", Configuration.APPID);  		 
-			retparamMap.put("attach", "");
-			retparamMap.put("body", reqbody.getString("PRODNAME")+"购买");
-			retparamMap.put("detail", reqbody.getString("PRODDESC"));
+			logger.info("getOrderInfoMap orderId()"+ orderInfo.getOrderId());
+			retparamMap.put("appid", Configuration.APPID);
+			retparamMap.put("body", orderInfo.getProductName()+"购买");
+			retparamMap.put("detail", orderInfo.getDescription());
 			retparamMap.put("out_trade_no", out_trade_no);			
 			retparamMap.put("total_fee", orderInfo.getAmount()+"");
 			retparamMap.put("spbill_create_ip", InetAddress.getLocalHost().getHostAddress().toString());
-			retparamMap.put("openid", openid);    
+			retparamMap.put("openid", orderInfo.getOpenid());  
 			retparamMap.put("notify_url", "https://www.nxyqedu.com/antifalse/wxPay/asynchronousNotify");//微信异步通知地址
-			retparamMap.put("trade_type","JSAPI"); 
-			retparamMap.put("product_id", reqbody.getString("PRODID")); 
+			retparamMap.put("trade_type","JSAPI");
+			retparamMap.put("product_id", orderInfo.getProductId());
 			retparamMap.put("mch_id", Configuration.MCH_ID); //商户id
 			retparamMap = WeixinPaymentUtil.paymentSign(retparamMap);
 		}catch(Exception e){
 			e.printStackTrace();
 		}
 		try {
+			System.out.println(MessageUtil.parseMap(retparamMap));
 			return MessageUtil.parseMap(retparamMap);
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 		}
 		return null;
+	}
+	
+	public static void main(String[] args) {
+
 	}
 }

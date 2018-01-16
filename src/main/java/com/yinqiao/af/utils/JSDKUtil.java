@@ -67,7 +67,7 @@ public class JSDKUtil {
 		}
 		try {
 			MessageDigest messageDigest = MessageDigest.getInstance(PublicConstants.ENCODE_ALGORITHM_MD5);
-			messageDigest.update(str.getBytes());
+			messageDigest.update(str.getBytes("UTF-8"));
 			return getFormattedText(messageDigest.digest());
 		} catch (Exception e) {
 			throw new RuntimeException(e);

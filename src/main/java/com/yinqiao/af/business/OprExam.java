@@ -96,20 +96,18 @@ public class OprExam extends BaseAction{
 			int rightCnt = 0;
 			int wrongCnt = 0;
 			String score = "0";
-			String tempStr = "";
+			List<String> tempList = new ArrayList<String>();
 			for (int i = 0; i < jsonArray.size(); i++) {
 				JSONObject job = jsonArray.getJSONObject(i);
 				if ("1".equals(job.get("result"))) {
 					rightCnt++;
-					tempStr += getNextQId(examHistory.getExamId(),job.get("index")+"",0) + ",";
+					tempList.add(getNextQId(examHistory.getExamId(),job.get("index")+"",0));
 				}else {
 					wrongCnt++;
 				}
 			}
-			System.out.println(tempStr);
-			if (!"".equals(tempStr)) {
-				tempStr = tempStr.substring(0,tempStr.length()-1);
-				score = questionBankService.getScore(tempStr);
+			if (tempList.size()>0) {
+				score = questionBankService.getScore(tempList);
 			}
 			System.out.println(score);
 			jsonObject.put("rightCnt",rightCnt);
@@ -132,15 +130,19 @@ public class OprExam extends BaseAction{
 		ExamHistory examHistory = examHistoryService.selectByPrimaryKey(hId);
 		JSONObject jsonObject = JSONObject.fromObject(examHistory.getAnswerRecord());
 		JSONArray jsonArray = jsonObject.getJSONArray("data");
+		JSONArray wrongsArray = new JSONArray();
 		for (int i = 0; i < jsonArray.size(); i++) {
 			JSONObject job = jsonArray.getJSONObject(i);
-			QuestionBank qBank = questionBankService.selectByPrimaryKey(getNextQId(examHistory.getExamId(),job.get("index")+"",0));					
-			qBank = this.modelConvert(qBank);
-			job.put("standard", qBank.getStandard());
-			job.put("content", qBank.getContent());
-			job.put("answer", qBank.getAnswer());
+			if ("0".equals(job.get("result"))) {
+				QuestionBank qBank = questionBankService.selectByPrimaryKey(getNextQId(examHistory.getExamId(),job.get("index")+"",0));
+				qBank = this.modelConvert(qBank);
+				job.put("standard", qBank.getStandard());
+				job.put("content", qBank.getContent());
+				job.put("answer", qBank.getAnswer());
+				wrongsArray.add(qBank);
+			}
 		}
-		return jsonArray;
+		return wrongsArray;
 	}
 	
 	private void UpdateExamHistory(String hId,String index,String result,String userAnwser){
@@ -286,7 +288,7 @@ public class OprExam extends BaseAction{
         dataelem2.put("answer", "A");  
         dataelem2.put("result", "1");    
           
-     // 返回一个JSONArray对象  
+        // 返回一个JSONArray对象  
         JSONArray jsonArray = new JSONArray();  
           
         jsonArray.add(0, dataelem1);  

@@ -54,7 +54,7 @@ public class WXAsynchornousNotify {
 	 * @param: @param request
 	 * @param: @param response
 	 * @param: @param model
-	 * @param: @return      
+	 * @param: @return
 	 * @return: String      
 	 * @throws
 	 */
@@ -78,9 +78,6 @@ public class WXAsynchornousNotify {
 			String transaction_id = wxmap.get("transaction_id");//交易流水号
 			String total_fee = wxmap.get("total_fee");//交易金额
 			log.info("异步返回信息："+ return_code  + "订单号："+ out_trade_no + "交易流水号："+ transaction_id);
-			/*  返回信息：SUCCESS
-        	          订单号：Red99952951509709293677318810613
-            	交易流水号：4200000020201711032235831032*/
 			String orderId =  out_trade_no.substring(0, out_trade_no.length() - 3);//原始订单id
 			PayDetail orderinfo = new PayDetail();			
 			
@@ -99,9 +96,8 @@ public class WXAsynchornousNotify {
 			orderinfo.setTradeNo(transaction_id);
 			orderinfo.setPayTime(new Date());
 			orderinfo.setAmount(Integer.parseInt(total_fee));
-			orderinfo.setStatusTime(new Date());
 			orderinfo.setUpdateTime(new Date());
-			orderinfo.setOrderid(orderId);
+			orderinfo.setOrderId(orderId);
 			payDetailService.update(orderinfo);//支付信息更新
 		}catch (Exception e) {
 			e.printStackTrace();

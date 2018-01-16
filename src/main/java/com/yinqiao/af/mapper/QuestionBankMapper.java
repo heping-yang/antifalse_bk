@@ -52,5 +52,5 @@ public interface QuestionBankMapper {
 	
 	List<Map> getQuestionCount(String examId);
 	
-	String getScore(String rights);
+	String getScore(List<String> rights);
 }

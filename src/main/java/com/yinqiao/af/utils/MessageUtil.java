@@ -109,7 +109,6 @@ public class MessageUtil {
 	public static String parseMap(Map<String,String> paramMap){
 		//log.info("parseMap start");
 		try{
-			SAXReader reader = new SAXReader();
 			Document document = DocumentHelper.createDocument();  ;
 			Element rootElement = document.addElement("xml");  
 			Element element = null;
@@ -121,7 +120,6 @@ public class MessageUtil {
 				//element.addCDATA(paramMap.get(elementName));
 				element.addText(paramMap.get(elementName) == null?"":paramMap.get(elementName));
 			}
-			//log.info("document.asXML(): "+document.asXML());
 			return document.asXML();	
 
 		}catch(Exception e){
