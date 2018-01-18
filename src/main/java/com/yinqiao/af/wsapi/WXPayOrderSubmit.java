@@ -131,20 +131,24 @@ public class WXPayOrderSubmit extends BaseAction{
 	/**
 	 * 微信获取Openid
 	 */
-	public String getOpenid(HttpServletRequest request, HttpServletResponse response) throws IOException{		
-		logger.info("@@@@@ enter jsapi pay :{}");
+	public String getOpenid(HttpServletRequest request, HttpServletResponse response) throws IOException{
+		JSONObject req = new JSONObject();
 		String url = Configuration.WX_GETOPENID_URL;
+		url = url.replaceAll("APPID", Configuration.APPID);
+		url = url.replaceAll("SECRET", Configuration.SECRET);
 		url += "&js_code="+ request.getParameter("code");
 		try{
 			String returnXml = HttpsRequestUtil.httpsRequestInner(url, HttpsRequestUtil.GET,"");
-			logger.info("The Xml info fetched from wechat server is :{}.",returnXml);
-			return returnXml;
+			logger.info(returnXml);
+			System.out.println(returnXml.substring(returnXml.indexOf("openid")+9, returnXml.length()-2));
+			req.put("body", returnXml.substring(returnXml.indexOf("openid")+9, returnXml.length()-2));
+			System.out.println(req.toString());
 		}catch(JSONException e){
 			logger.error(e.getMessage());
 		}catch (Exception e) {
 			logger.error(e.getMessage());
 		}
-		return null;
+		return req.toString();
 	}
 
 	/**
@@ -189,6 +193,5 @@ public class WXPayOrderSubmit extends BaseAction{
 	}
 	
 	public static void main(String[] args) {
-
 	}
 }
