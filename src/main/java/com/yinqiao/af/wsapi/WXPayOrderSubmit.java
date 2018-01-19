@@ -137,11 +137,12 @@ public class WXPayOrderSubmit extends BaseAction{
 		url = url.replaceAll("APPID", Configuration.APPID);
 		url = url.replaceAll("SECRET", Configuration.SECRET);
 		url += "&js_code="+ request.getParameter("code");
+		System.out.println(url);
 		try{
 			String returnXml = HttpsRequestUtil.httpsRequestInner(url, HttpsRequestUtil.GET,"");
 			logger.info(returnXml);
 			System.out.println(returnXml.substring(returnXml.indexOf("openid")+9, returnXml.length()-2));
-			req.put("body", returnXml.substring(returnXml.indexOf("openid")+9, returnXml.length()-2));
+			req.put("openid", returnXml.substring(returnXml.indexOf("openid")+9, returnXml.length()-2));
 			System.out.println(req.toString());
 		}catch(JSONException e){
 			logger.error(e.getMessage());

@@ -45,10 +45,10 @@ public class OprExam extends BaseAction{
 		return req.toString();
 	}
 	
-	public String queryAnwsers(HttpServletRequest request, HttpServletResponse response){
+	public String queryAnswers(HttpServletRequest request, HttpServletResponse response){
 		JSONObject req = new JSONObject();
 		String hId = request.getParameter("hId");
-		req.put("anwsers", JSONArray.fromObject(examHistoryService.selectByPrimaryKey(hId)).toString());
+		req.put("answers", JSONArray.fromObject(examHistoryService.selectByPrimaryKey(hId)).toString());
 		return req.toString();
 	}
 	
@@ -56,7 +56,7 @@ public class OprExam extends BaseAction{
 		JSONObject req = new JSONObject();
 		String examId = request.getParameter("examId");
 		String index = request.getParameter("index");
-		String userAnwser = request.getParameter("userAnwser");
+		String userAnswer = request.getParameter("userAnswer");
 		String result = request.getParameter("userResult");
 		String hId = request.getParameter("hId");
 		String type = request.getParameter("type");
@@ -72,7 +72,7 @@ public class OprExam extends BaseAction{
 		req.put("questionCnt", questionBankService.getQuestionCount(examId));
 		if (!"select".equals(type)) {
 			if (!"0".equals(index)) {
-				this.UpdateExamHistory(hId,index,result,userAnwser);
+				this.UpdateExamHistory(hId,index,result,userAnswer);
 			}else{
 				examHistoryService.insert(getNewExamHistory(examId, hId));
 			}
@@ -133,22 +133,25 @@ public class OprExam extends BaseAction{
 		JSONArray wrongsArray = new JSONArray();
 		for (int i = 0; i < jsonArray.size(); i++) {
 			JSONObject job = jsonArray.getJSONObject(i);
-			if ("0".equals(job.get("result"))) {
+			if (!"1".equals(job.get("result"))) {
 				QuestionBank qBank = questionBankService.selectByPrimaryKey(getNextQId(examHistory.getExamId(),job.get("index")+"",0));
 				qBank = this.modelConvert(qBank);
 				job.put("standard", qBank.getStandard());
 				job.put("content", qBank.getContent());
-				job.put("answer", qBank.getAnswer());
-				wrongsArray.add(qBank);
+				job.put("answers", qBank.getAnswer());
+				if ("".equals(job.get("answer"))) {
+					job.put("answer", "无作答");
+				}
+				wrongsArray.add(job);
 			}
 		}
 		return wrongsArray;
 	}
 	
-	private void UpdateExamHistory(String hId,String index,String result,String userAnwser){
+	private void UpdateExamHistory(String hId,String index,String result,String userAnswer){
 		ExamHistory examHistory = examHistoryService.selectByPrimaryKey(hId);
 		JSONObject jsonObject = JSONObject.fromObject(examHistory.getAnswerRecord());
-		((JSONObject)jsonObject.getJSONArray("data").get(Integer.parseInt(index)-1)).put("anwser",userAnwser);
+		((JSONObject)jsonObject.getJSONArray("data").get(Integer.parseInt(index)-1)).put("answer",userAnswer);
 		((JSONObject)jsonObject.getJSONArray("data").get(Integer.parseInt(index)-1)).put("result",result);
 		examHistory.setAnswerRecord(jsonObject.toString());
 		examHistory.setUpdateTime(new Date());
@@ -182,7 +185,7 @@ public class OprExam extends BaseAction{
 				JSONObject dataelem=new JSONObject();  
 		        dataelem.put("type", map.get("TYPE").toString());
 		        dataelem.put("index", count);
-		        dataelem.put("anwser", "");  
+		        dataelem.put("answer", "");  
 		        dataelem.put("result", "");
 		        count++;
 		        jsonArray.add(dataelem);  
