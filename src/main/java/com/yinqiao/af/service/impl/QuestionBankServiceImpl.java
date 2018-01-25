@@ -1,5 +1,6 @@
 package com.yinqiao.af.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -49,5 +50,13 @@ public class QuestionBankServiceImpl implements IQuestionBankService {
 
 	public String getScore(List<String> rights) {
 		return questionBankMapper.getScore(rights);
+	}
+
+	public List<Map> queryTypeQuestionCount() {
+		return questionBankMapper.queryTypeQuestionCount();
+	}
+
+	public QuestionBank queryTypeQuestion(HashMap<String, String> map) {
+		return questionBankMapper.queryTypeQuestion(map);
 	}
 }

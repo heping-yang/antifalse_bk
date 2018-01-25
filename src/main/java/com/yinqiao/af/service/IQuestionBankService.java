@@ -1,5 +1,6 @@
 package com.yinqiao.af.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,4 +27,8 @@ public interface IQuestionBankService {
 	
 	//根据做对答案参数获取试题分数
 	String getScore(List<String> rights);
+	
+	List<Map> queryTypeQuestionCount();
+	
+	QuestionBank queryTypeQuestion(HashMap<String, String> map);
 }

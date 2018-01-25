@@ -24,27 +24,14 @@ import freemarker.template.TemplateModelException;
 public class SmsVerify extends BaseAction {
 	
 	private static Logger logger = LoggerFactory.getLogger(SmsVerify.class);
-	
-//	@Autowired
-//	private ISmsService smsService;
 
-	public void send(HttpServletRequest request, HttpServletResponse response, JSONObject param, ModelMap model)
-			throws TemplateModelException {
-		Retinfo retinfo = new Retinfo();
-		retinfo.setRetCode("100");
-		retinfo.setRetMsg("Success");
-		
-		Map<String,Object> body = new HashMap<String, Object>();
-		
-		JSONObject reqbody = param.getJSONObject("reqbody");
-		logger.info("reqbody is {}", reqbody);
-		String telnum = reqbody.getString("telnum");
+	public String send(HttpServletRequest request, HttpServletResponse response){
+		JSONObject req = new JSONObject();
+		String telnum = request.getParameter("telnum");
 		String smscode = String.valueOf((int)((Math.random()*9+1)*100000));
 		SmsSendUtil.SendSms(telnum, smscode);
-		
-		body.put("smscode", smscode);
-		model.put("retinfo", retinfo);
-		model.put("body", JSONObject.fromObject(body).toString());
+		req.put("smscode", smscode);
+		return req.toString();
 	}
 	
 	public void verify(HttpServletRequest request, HttpServletResponse response, JSONObject param, ModelMap model)

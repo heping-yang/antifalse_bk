@@ -2,6 +2,7 @@ package com.yinqiao.af.mapper;
 
 import com.yinqiao.af.model.QuestionBank;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -53,4 +54,8 @@ public interface QuestionBankMapper {
 	List<Map> getQuestionCount(String examId);
 	
 	String getScore(List<String> rights);
+	
+	List<Map> queryTypeQuestionCount();
+	
+	QuestionBank queryTypeQuestion(HashMap<String, String> map);
 }

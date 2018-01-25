@@ -40,8 +40,8 @@ public class OprExam extends BaseAction{
 	
 	public String list(HttpServletRequest request, HttpServletResponse response){
 		JSONObject req = new JSONObject();
-		System.out.println(JSONArray.fromObject(examService.selectAll()).toString());
 		req.put("list", JSONArray.fromObject(examService.selectAll()).toString());
+		req.put("typelist", JSONArray.fromObject(questionBankService.queryTypeQuestionCount()).toString());
 		return req.toString();
 	}
 	
@@ -52,7 +52,41 @@ public class OprExam extends BaseAction{
 		return req.toString();
 	}
 	
+	
+	//类型题下一题
 	public String queryNextQuestion(HttpServletRequest request, HttpServletResponse response){
+		JSONObject req = new JSONObject();
+		String examId = request.getParameter("examId");
+		String index = request.getParameter("index");
+		String userAnswer = request.getParameter("userAnswer");
+		String result = request.getParameter("userResult");
+		String hId = request.getParameter("hId");
+		String type = request.getParameter("type");
+		HashMap<String, String> paramMap = new HashMap<String, String>();
+		paramMap.put("type", "1");
+		paramMap.put("questionId", "type01001");
+		req.put("qu", JSONArray.fromObject(questionBankService.queryTypeQuestion(paramMap)).toString());
+		int offset = 0;
+		if ("1".equals(questionBankService.isExist(getNextQId(examId,index,1)))) {
+			offset = 1;
+		}
+		req.put("question", JSONArray.fromObject(modelConvert(questionBankService.selectByPrimaryKey(getNextQId(examId,index,offset)))).toString());
+		req.put("index", getNextIndex(index));
+		req.put("total", questionBankService.getExamCount(examId));
+		req.put("lastFlag", questionBankService.isExist(getNextQId(examId,index,offset+1)));
+		req.put("questionCnt", questionBankService.getQuestionCount(examId));
+		if (!"select".equals(type)) {
+			if (!"0".equals(index)) {
+				this.UpdateExamHistory(hId,index,result,userAnswer);
+			}else{
+				examHistoryService.insert(getNewExamHistory(examId, hId));
+			}
+		}
+		return req.toString();
+	}
+	
+	
+	public String queryNextTypeQuestion(HttpServletRequest request, HttpServletResponse response){
 		JSONObject req = new JSONObject();
 		String examId = request.getParameter("examId");
 		String index = request.getParameter("index");
