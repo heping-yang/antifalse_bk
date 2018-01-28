@@ -107,17 +107,41 @@
 	</foreach>
   </select>
   
+  <select id="queryTypeQuestionCount" resultType="java.util.Map">
+  	select t.type , count(t.question_id) as typecnt from AF_QUESTION_BANK t group by t.type
+  </select>
+  
   <sql id="typeTable">
   	(select 'type0'||#{type,jdbcType=VARCHAR} as exam_id, 'type0'||#{type,jdbcType=VARCHAR}||lpad(rownum,3,'0') as question_id ,t.type ,t.content ,t.picflag,t.answer,t.standard,t.score from AF_QUESTION_BANK t where t.type = #{type,jdbcType=VARCHAR})
   </sql>
   
-  <select id="queryTypeQuestionCount" resultType="java.util.Map" >
-  	select t.type , count(t.question_id) as typecnt from AF_QUESTION_BANK t group by t.type
+  <select id="getOneTypeQuestionCount" resultType="String" parameterType="String">
+  	select count(*) as questioncnt from <include refid="typeTable"/> t order by t.type
   </select>
   
   <select id="queryTypeQuestion" parameterType="java.util.HashMap" resultMap="BaseResultMap" >
   	select QUESTION_ID, EXAM_ID, TYPE, CONTENT, PICFLAG, ANSWER, STANDARD, SCORE
     from <include refid="typeTable"/>
     where QUESTION_ID = #{questionId,jdbcType=VARCHAR}
+  </select>
+  
+    <select id="isTypeExist" resultType="java.lang.String" parameterType="java.util.HashMap">
+  	select count(*)
+	    from <include refid="typeTable"/>
+	    where QUESTION_ID = #{questionId,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="getTypeExamCount" resultType="java.lang.String" parameterType="java.util.HashMap">
+  	select count(*)
+    from <include refid="typeTable"/>
+    where EXAM_ID = #{examId,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="getTypeScore" resultType="java.lang.String" parameterType="java.util.List">
+  	select sum(t.score) from AF_QUESTION_BANK t where t.question_id in
+  	<foreach item="item" index="id" collection="list" open="("
+		separator="," close=")">
+		#{item}
+	</foreach>
   </select>
 </mapper>

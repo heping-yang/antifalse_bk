@@ -62,6 +62,7 @@ public class OprExam extends BaseAction{
 		String result = request.getParameter("userResult");
 		String hId = request.getParameter("hId");
 		String type = request.getParameter("type");
+		String examtype = request.getParameter("examtype");
 		HashMap<String, String> paramMap = new HashMap<String, String>();
 		paramMap.put("type", "1");
 		paramMap.put("questionId", "type01001");
@@ -79,7 +80,7 @@ public class OprExam extends BaseAction{
 			if (!"0".equals(index)) {
 				this.UpdateExamHistory(hId,index,result,userAnswer);
 			}else{
-				examHistoryService.insert(getNewExamHistory(examId, hId));
+				examHistoryService.insert(getNewExamHistory(examId, hId,examtype));
 			}
 		}
 		return req.toString();
@@ -94,21 +95,28 @@ public class OprExam extends BaseAction{
 		String result = request.getParameter("userResult");
 		String hId = request.getParameter("hId");
 		String type = request.getParameter("type");
+		String examtype = request.getParameter("examtype");
 		int offset = 0;
+		HashMap< String, String> map = new HashMap<String, String>();
+		map.put("type", examtype);
+		map.put("examId", examId);
+		map.put("questionId", getNextQId(examId,index,1));
 		System.out.println(JSONArray.fromObject(examService.selectAll()).toString());
-		if ("1".equals(questionBankService.isExist(getNextQId(examId,index,1)))) {
+		if ("1".equals(questionBankService.isTypeExist(map))) {
 			offset = 1;
 		}
-		req.put("question", JSONArray.fromObject(modelConvert(questionBankService.selectByPrimaryKey(getNextQId(examId,index,offset)))).toString());
+		map.put("examId", getNextQId(examId,index,offset));
+		req.put("question", JSONArray.fromObject(modelConvert(questionBankService.queryTypeQuestion(map))).toString());
 		req.put("index", getNextIndex(index));
-		req.put("total", questionBankService.getExamCount(examId));
-		req.put("lastFlag", questionBankService.isExist(getNextQId(examId,index,offset+1)));
-		req.put("questionCnt", questionBankService.getQuestionCount(examId));
+		req.put("total", questionBankService.getOneTypeQuestionCount(examtype));
+		map.put("questionId", getNextQId(examId,index,offset+1));
+		req.put("lastFlag", questionBankService.isTypeExist(map));
+		req.put("questionCnt", questionBankService.getOneTypeQuestionCount(examtype));
 		if (!"select".equals(type)) {
 			if (!"0".equals(index)) {
 				this.UpdateExamHistory(hId,index,result,userAnswer);
 			}else{
-				examHistoryService.insert(getNewExamHistory(examId, hId));
+				examHistoryService.insert(getNewExamHistory(examId, hId,examtype));
 			}
 		}
 		return req.toString();
@@ -168,9 +176,23 @@ public class OprExam extends BaseAction{
 		for (int i = 0; i < jsonArray.size(); i++) {
 			JSONObject job = jsonArray.getJSONObject(i);
 			if (!"1".equals(job.get("result"))) {
-				QuestionBank qBank = questionBankService.selectByPrimaryKey(getNextQId(examHistory.getExamId(),job.get("index")+"",0));
+				QuestionBank qBank = new QuestionBank();
+				if (examHistory.getExamId().indexOf("type") >= 0) {
+					HashMap<String, String>  map =  new HashMap<String, String>();
+					map.put("type", examHistory.getExamId().substring(examHistory.getExamId().length() - 1));
+					map.put("questionId", getNextQId(examHistory.getExamId(),job.get("index")+"",0));
+					qBank = questionBankService.queryTypeQuestion(map);
+				}else {
+					qBank = questionBankService.selectByPrimaryKey(getNextQId(examHistory.getExamId(),job.get("index")+"",0));
+				}
 				qBank = this.modelConvert(qBank);
-				job.put("standard", qBank.getStandard());
+				String tempStandard  = qBank.getStandard();
+				job.put("standard", tempStandard);
+				if(tempStandard != null && !"".equals(tempStandard) &&("2".equals(job.get("type")) || "4".equals(job.get("type")))){
+				 for (int j = 0; j < tempStandard.length(); j++) {            
+					 job.put("standard"+tempStandard.charAt(j), tempStandard.charAt(j));
+					 }
+				}
 				job.put("content", qBank.getContent());
 				job.put("answers", qBank.getAnswer());
 				if ("".equals(job.get("answer"))) {
@@ -192,7 +214,7 @@ public class OprExam extends BaseAction{
 		examHistoryService.updateByPrimaryKey(examHistory);
 	}
 	
-	private ExamHistory getNewExamHistory(String examId,String hId){
+	private ExamHistory getNewExamHistory(String examId,String hId,String type){
 		ExamHistory examHistory = new ExamHistory();
 		examHistory.setCreateTime(new Date());
 		examHistory.setExamId(examId);
@@ -202,22 +224,37 @@ public class OprExam extends BaseAction{
 		//examHistory.setUpdateTime(updateTime);
 		//examHistory.setUsedtime(usedtime);
 		//examHistory.setUserId(userId);
-		examHistory.setAnswerRecord(getNewAnswerRecord(examId));
+		examHistory.setAnswerRecord(getNewAnswerRecord(examId,type));
 		return examHistory;
 	}
 	
-	private String getNewAnswerRecord(String examId){
+	private String getNewAnswerRecord(String examId,String type){
         JSONObject jsonObject = new JSONObject();  
         jsonObject.put("rightCnt", "");
         jsonObject.put("wrongCnt", "");  
         JSONArray jsonArray = new JSONArray();  
         int count = 1;
-		List<Map> list = questionBankService.getQuestionCount(examId);
-		for (Map map : list) {
-			int i = Integer.parseInt(map.get("QUESTIONCNT").toString());
-			for (int j = 0; j < i; j++) {
+        List<Map> list = null;
+        int typeCnt = 0;
+        if ("0".equals(type)) {
+        	list = questionBankService.getQuestionCount(examId);
+    		for (Map map : list) {
+    			int i = Integer.parseInt(map.get("QUESTIONCNT").toString());
+    			for (int j = 0; j < i; j++) {
+    				JSONObject dataelem=new JSONObject();  
+    		        dataelem.put("type", map.get("TYPE").toString());
+    		        dataelem.put("index", count);
+    		        dataelem.put("answer", "");  
+    		        dataelem.put("result", "");
+    		        count++;
+    		        jsonArray.add(dataelem);  
+    			}
+    		}
+		}else {
+			typeCnt = Integer.parseInt(questionBankService.getOneTypeQuestionCount(type));
+			for (int j = 0; j < typeCnt; j++) {
 				JSONObject dataelem=new JSONObject();  
-		        dataelem.put("type", map.get("TYPE").toString());
+		        dataelem.put("type", type);
 		        dataelem.put("index", count);
 		        dataelem.put("answer", "");  
 		        dataelem.put("result", "");
@@ -337,5 +374,7 @@ public class OprExam extends BaseAction{
         
         String temp = "124563,12453364,";
         System.out.println(temp.substring(0,temp.length() -1 ));
+        
+        System.out.println("00001".substring("00001".length() -1));
 	}
 }

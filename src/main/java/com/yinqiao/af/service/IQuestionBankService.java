@@ -31,4 +31,13 @@ public interface IQuestionBankService {
 	List<Map> queryTypeQuestionCount();
 	
 	QuestionBank queryTypeQuestion(HashMap<String, String> map);
+	
+	//按类型
+    String isTypeExist(HashMap<String, String> map);
+    
+	String getTypeExamCount(HashMap<String, String> map);
+	
+	List<Map> getTypeQuestionCount(HashMap<String, String> map);
+	
+	String getOneTypeQuestionCount(String type);
 }
