@@ -9,7 +9,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
@@ -17,12 +16,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.ModelMap;
 
 import com.yinqiao.af.business.BaseAction;
-import com.yinqiao.af.model.PayDetail;
-import com.yinqiao.af.model.Retinfo;
-import com.yinqiao.af.service.IPayDetailService;
+import com.yinqiao.af.model.OrderInfo;
+import com.yinqiao.af.service.IOrderInfoService;
 import com.yinqiao.af.utils.Configuration;
 import com.yinqiao.af.utils.HttpsRequestUtil;
 import com.yinqiao.af.utils.MessageUtil;
@@ -38,7 +35,7 @@ public class WXPayOrderSubmit extends BaseAction{
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Autowired
-	private IPayDetailService payDetailService;
+	private IOrderInfoService orderInfoService;
 
 	/**
 	 * 支付信息提交并返回支付参数
@@ -51,24 +48,18 @@ public class WXPayOrderSubmit extends BaseAction{
 		JSONObject req = new JSONObject();
 		try {
 			System.out.println("ordersubmitApi");
-			PayDetail orderInfo = new PayDetail();
-			orderInfo.setAmount(Integer.parseInt(request.getParameter("prodFee")));
+			OrderInfo orderInfo = new OrderInfo();
+			orderInfo.setAmount(request.getParameter("prodFee"));
 			orderInfo.setProductId(request.getParameter("productId"));
 			orderInfo.setProductName(request.getParameter("productName"));
 			orderInfo.setOrderId(request.getParameter("orderId"));
-			orderInfo.setPhone(request.getParameter("phone"));
+			orderInfo.setTelnum(request.getParameter("phone"));
 			orderInfo.setDescription(request.getParameter("proddesc"));
 			orderInfo.setOpenid(request.getParameter("openid"));
 			orderInfo.setStatus("0");
 			orderInfo.setCreateTime(new Date());
-			orderInfo.setUpdateTime(new Date());
 			//查询 已有支付信息 做更新 否则增加
-//			Map<String,Object> payMap = payDetailService.queryPayDetailById(orderInfo.getOrderId());
-//			if(null != payMap && payMap.size()>0){
-//				payDetailService.update(orderInfo);
-//			}else{
-//				payDetailService.insert(orderInfo);
-//			}
+			orderInfoService.insert(orderInfo);
 			req.put("body", JSONObject.fromObject(getJSpay(orderInfo)).toString());
 			logger.info("=========支付订单=========="+orderInfo.toString());
 		} catch (Exception e) {
@@ -87,7 +78,7 @@ public class WXPayOrderSubmit extends BaseAction{
 	 * @return
 	 * @throws IOException
 	 */
-	public Map<String,String> getJSpay(PayDetail orderInfo) throws IOException{		
+	public Map<String,String> getJSpay(OrderInfo orderInfo) throws IOException{		
 		logger.info("@@@@@ enter jsapi pay :{}");
 		try{
 			String returnXml = HttpsRequestUtil.httpsRequestInner(Configuration.PAY_ORDER_URL, HttpsRequestUtil.POST,getOrderInfoMap(orderInfo));
@@ -163,7 +154,7 @@ public class WXPayOrderSubmit extends BaseAction{
 	 * @param syslog 日志
 	 * @throws Exception 
 	 */
-	public String getOrderInfoMap(PayDetail orderInfo){
+	public String getOrderInfoMap(OrderInfo orderInfo){
 		Map<String, String> retparamMap = new HashMap<String,String>();		
 		String out_trade_no = orderInfo.getOrderId()+(int)((Math.random()*9+1)*100); //随机生成新的订单号，防止重复订单 
 		System.out.println(out_trade_no);

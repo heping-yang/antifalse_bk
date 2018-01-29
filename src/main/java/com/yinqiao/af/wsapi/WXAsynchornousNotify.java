@@ -29,9 +29,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.xml.sax.SAXException;
 
+import com.ibm.icu.util.Calendar;
+import com.ibm.icu.util.GregorianCalendar;
 import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
-import com.yinqiao.af.model.PayDetail;
-import com.yinqiao.af.service.IPayDetailService;
+import com.yinqiao.af.model.OrderInfo;
+import com.yinqiao.af.model.User;
+import com.yinqiao.af.service.IOrderInfoService;
+import com.yinqiao.af.service.IUserService;
+import com.yinqiao.af.service.impl.UserServiceImpl;
 
 
 @Controller
@@ -41,7 +46,10 @@ public class WXAsynchornousNotify {
 	private Logger log = LoggerFactory.getLogger(WXAsynchornousNotify.class);
 
 	@Autowired
-	private IPayDetailService payDetailService;
+	private IOrderInfoService orderInfoService;
+	
+	@Autowired
+	private IUserService userService;
 	/**
 	 * 微信支付异步通知接口，修改订单状态
 	 * @Title: excute   
@@ -67,28 +75,39 @@ public class WXAsynchornousNotify {
 			String out_trade_no = wxmap.get("out_trade_no");//随机订单号
 			String transaction_id = wxmap.get("transaction_id");//交易流水号
 			String total_fee = wxmap.get("total_fee");//交易金额
-			log.info("接收信息状态："+ return_code  + "订单号："+ out_trade_no + "交易流水号："+ transaction_id);
 			String orderId =  out_trade_no.substring(0, out_trade_no.length() - 3);//原始订单id
-			PayDetail orderinfo = new PayDetail();			
-			
+			log.info("接收信息状态："+ return_code  + "订单号："+ orderId + "交易流水号："+ transaction_id);
+
 			if("SUCCESS".equals(return_code)){
-				Map<String, Object> orderMap = payDetailService.queryPayDetailById(orderId);//原始订单信息
-				if(orderMap != null && orderMap.size()>0){
-					orderinfo.setStatus("1");
+				OrderInfo orderInfo = orderInfoService.selectByPrimaryKey(orderId);//原始订单信息
+				if(orderInfo != null){
 					result = this.setXml("SUCCESS", "OK");
+					orderInfo.setStatus("1");
+					orderInfo.setTradeNo(transaction_id);
+					orderInfo.setPaytime(new Date());
+					orderInfo.setAmount(total_fee);
+					orderInfo.setOrderId(orderId);
+					orderInfoService.updateByPrimaryKey(orderInfo);//支付信息更新
+					User user = userService.selectByPrimaryKey(orderInfo.getTelnum());
+					if (user != null) {
+						if ("M01".equals(orderInfo.getProductId())) {
+							user.setUserstatus("3");
+							user.setEffstart(new Date());
+							user.setEffend(this.getMonthDate(1));
+						}else if("Y01".equals(orderInfo.getProductId())){
+							user.setUserstatus("4");
+							user.setEffstart(new Date());
+							user.setEffend(this.getMonthDate(36));
+						}
+						userService.updateByPrimaryKey(user);
+					}
 				}else{
 					result = this.setXml("fail", "订单不存在");
 				}
 			}else{
-				orderinfo.setStatus("0");
-				result =  this.setXml("fail", "交易失败");  
+				result =  this.setXml("fail", "交易失败");
 			}
-			orderinfo.setTradeNo(transaction_id);
-			orderinfo.setPayTime(new Date());
-			orderinfo.setAmount(Integer.parseInt(total_fee));
-			orderinfo.setUpdateTime(new Date());
-			orderinfo.setOrderId(orderId);
-			payDetailService.update(orderinfo);//支付信息更新
+			
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -96,6 +115,16 @@ public class WXAsynchornousNotify {
 		return result; 
 	}
 
+	private Date getMonthDate(int mouth){
+		Date date=new   Date();//取时间
+		System.out.println(date.toString());
+	    Calendar calendar = new GregorianCalendar(); 
+	    calendar.setTime(date); 
+	    calendar.add(calendar.MONTH, mouth);//把日期往后增加一个月.整数往后推,负数往前移动
+	    date=calendar.getTime();   //这个时间就是日期往后推一天的结果 
+	    return date;
+	}
+	
 	   public String Inputstr2Str_Reader(InputStream in, String encode)  
 	   {  
 	         
@@ -171,24 +200,15 @@ public class WXAsynchornousNotify {
 	}
 	
 	public static void main(String[] args) throws UnsupportedEncodingException, DocumentException {
-		WXAsynchornousNotify notify = new WXAsynchornousNotify();
-		String xmlStr = "	<xml><appid><![CDATA[wxfbcd9d55b2599597]]></appid> " + 
-	"<bank_type><![CDATA[CFT]]></bank_type>" + 
-	"<cash_fee><![CDATA[1]]></cash_fee>" + 
-	"<fee_type><![CDATA[CNY]]></fee_type>" + 
-	"<is_subscribe><![CDATA[N]]></is_subscribe>" + 
-	"<mch_id><![CDATA[1496240462]]></mch_id>" + 
-	"<nonce_str><![CDATA[ONraflzWamOVmzl]]></nonce_str>" + 
-	"<openid><![CDATA[oUyEW0d8q0VJqZYHKpipWsBNa1Ec]]></openid>" + 
-	"<out_trade_no><![CDATA[5d613593b48c98c454b3ae9af7e6f457]]></out_trade_no>" + 
-	"<result_code><![CDATA[SUCCESS]]></result_code>" + 
-	"<return_code><![CDATA[SUCCESS]]></return_code>" + 
-	"<sign><![CDATA[F9FD7F634318BFF26A89489EBC4ED93B]]></sign>" + 
-	"<time_end><![CDATA[20180125161945]]></time_end>" + 
-	"<total_fee>1</total_fee>" + 
-	"<trade_type><![CDATA[JSAPI]]></trade_type>" + 
-	"<transaction_id><![CDATA[4200000067201801250564006059]]></transaction_id>" + 
-	"</xml>";
-		notify.AnalyWXXMLtoMap(xmlStr);
+		Date date=new   Date();//取时间
+		System.out.println(date.toString());
+	    Calendar   calendar   =   new   GregorianCalendar(); 
+	    calendar.setTime(date); 
+//	    calendar.add(calendar.YEAR, 1);//把日期往后增加一年.整数往后推,负数往前移动
+	    calendar.add(calendar.MONTH, 36);//把日期往后增加一个月.整数往后推,负数往前移动
+//	    calendar.add(calendar.DATE,1);//把日期往后增加一天.整数往后推,负数往前移动 
+//	    calendar.add(calendar.WEEK_OF_MONTH, 1);//把日期往后增加一个月.整数往后推,负数往前移动
+	    date=calendar.getTime();   //这个时间就是日期往后推一天的结果 
+	    System.out.println(date);
 	}
 }

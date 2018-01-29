@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 import com.yinqiao.af.model.Grade;
 import com.yinqiao.af.model.User;
 import com.yinqiao.af.service.IGradeService;
+import com.yinqiao.af.service.IOrderInfoService;
+import com.yinqiao.af.service.IProductService;
 import com.yinqiao.af.service.IUserService;
 import com.yinqiao.af.utils.JSDKUtil;
 
@@ -31,6 +33,12 @@ public class OprUser extends BaseAction{
 	
 	@Autowired
 	private IUserService userService;
+	
+	@Autowired
+	private IProductService productService;
+	
+	@Autowired
+	private IOrderInfoService orderInfoService;
 	
 	public String queryGrade(HttpServletRequest request, HttpServletResponse response){
 		JSONObject req = new JSONObject();
@@ -111,6 +119,24 @@ public class OprUser extends BaseAction{
 			req.put("respwd", "success");
 		}else {
 			req.put("respwd", "upfail");
+		}
+		return req.toString();
+	}
+	
+	public String queryProduct(HttpServletRequest request, HttpServletResponse response){
+		JSONObject req = new JSONObject();
+		String idcard = request.getParameter("idcard");
+		String userstatus = request.getParameter("userstatus");
+		List<Grade> grades = gradeService.selectByIdcard(idcard);
+		System.out.println(JSONArray.fromObject(grades).toString());
+		if (!StringUtils.isBlank(userstatus) && "1".equals(userstatus)) {
+			if (null != grades && grades.size()>0) {
+				req.put("product", JSONObject.fromObject(productService.selectByPrimaryKey("Y01")).toString());
+				req.put("count", orderInfoService.queryCntByProductId("Y01"));
+			}else {
+				req.put("product", JSONObject.fromObject(productService.selectByPrimaryKey("M01")).toString());
+				req.put("count", orderInfoService.queryCntByProductId("M01"));
+			}
 		}
 		return req.toString();
 	}

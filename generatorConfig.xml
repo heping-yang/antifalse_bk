@@ -18,6 +18,6 @@
     <javaModelGenerator targetPackage="com.yinqiao.af.model" targetProject="antifalse/src/main/java" />
     <sqlMapGenerator targetPackage="com.yinqiao.af.mapper" targetProject="antifalse/src/main/java" />
     <javaClientGenerator targetPackage="com.yinqiao.af.mapper" targetProject="antifalse/src/main/java" type="XMLMAPPER" />
-    <table tableName="AF_USER" domainObjectName="User"></table>
+    <table tableName="AF_PRODUCT" domainObjectName="Product"></table>
   </context>
 </generatorConfiguration>
