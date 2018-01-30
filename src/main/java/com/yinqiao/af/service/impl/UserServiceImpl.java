@@ -35,4 +35,8 @@ public class UserServiceImpl implements IUserService {
 		return userMapper.updateByPrimaryKey(record);
 	}
 
+	public String queryUserIsEffective(String idcard) {
+		return userMapper.queryUserIsEffective(idcard);
+	}
+
 }

@@ -34,6 +34,7 @@ import com.ibm.icu.util.GregorianCalendar;
 import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
 import com.yinqiao.af.model.OrderInfo;
 import com.yinqiao.af.model.User;
+import com.yinqiao.af.service.IEnrollService;
 import com.yinqiao.af.service.IOrderInfoService;
 import com.yinqiao.af.service.IUserService;
 import com.yinqiao.af.service.impl.UserServiceImpl;
@@ -50,6 +51,9 @@ public class WXAsynchornousNotify {
 	
 	@Autowired
 	private IUserService userService;
+	
+	@Autowired
+	private IEnrollService enrollService;
 	/**
 	 * 微信支付异步通知接口，修改订单状态
 	 * @Title: excute   
@@ -91,7 +95,11 @@ public class WXAsynchornousNotify {
 					User user = userService.selectByPrimaryKey(orderInfo.getTelnum());
 					if (user != null) {
 						if ("M01".equals(orderInfo.getProductId())) {
-							user.setUserstatus("3");
+							if ("1".equals(enrollService.queryIsEnrolled(user.getIdcard()))) {
+								user.setUserstatus("3");
+							}else {
+								user.setUserstatus("2");
+							}
 							user.setEffstart(new Date());
 							user.setEffend(this.getMonthDate(1));
 						}else if("Y01".equals(orderInfo.getProductId())){

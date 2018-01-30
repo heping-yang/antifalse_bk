@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import com.yinqiao.af.model.Grade;
 import com.yinqiao.af.model.User;
+import com.yinqiao.af.service.IEnrollService;
 import com.yinqiao.af.service.IGradeService;
 import com.yinqiao.af.service.IOrderInfoService;
 import com.yinqiao.af.service.IProductService;
@@ -39,6 +40,9 @@ public class OprUser extends BaseAction{
 	
 	@Autowired
 	private IOrderInfoService orderInfoService;
+	
+	@Autowired
+	private IEnrollService enrollService;
 	
 	public String queryGrade(HttpServletRequest request, HttpServletResponse response){
 		JSONObject req = new JSONObject();
@@ -69,10 +73,18 @@ public class OprUser extends BaseAction{
 		User user = userService.selectByPrimaryKey(telnum);
 		if (null != user && JSDKUtil.encodeByMD5(password).equals(user.getPassword())) {
 			req.put("login", "success");
-			req.put("user", JSONObject.fromObject(user).toString());
+			req.put("user", JSONObject.fromObject(userCheck(user)).toString());
 		}else {
 			req.put("login", "fail");
 		}
+		return req.toString();
+	}
+	
+	public String  relogin(HttpServletRequest request, HttpServletResponse response) {
+		JSONObject req = new JSONObject();
+		String telnum = request.getParameter("telnum");
+		User user = userService.selectByPrimaryKey(telnum);
+		req.put("user", JSONObject.fromObject(userCheck(user)).toString());
 		return req.toString();
 	}
 	
@@ -86,11 +98,24 @@ public class OprUser extends BaseAction{
 		User user = getNewUser(telnum,password,openid,username,idcard);
 		if (userService.insert(user) > 0) {
 			req.put("register", "success");
-			req.put("user", JSONObject.fromObject(userService.selectByPrimaryKey(telnum)).toString());
+			req.put("user", JSONObject.fromObject(userCheck(userService.selectByPrimaryKey(telnum))).toString());
 		}else {
 			req.put("register", "fail");
 		}
 		return req.toString();
+	}
+	
+	private User userCheck(User user){
+		if("1".equals(userService.queryUserIsEffective(user.getIdcard()))){
+			if ("2".equals(user.getUserstatus()) && "1".equals(enrollService.queryIsEnrolled(user.getIdcard()))) {
+				user.setUserstatus("3");
+				userService.updateByPrimaryKey(user);
+			}
+		}else {
+			user.setUserstatus("1");
+			userService.updateByPrimaryKey(user);
+		}
+		return user;
 	}
 	
 	private User getNewUser(String telnum,String password,String openid,String username,String idcard){
@@ -129,13 +154,16 @@ public class OprUser extends BaseAction{
 		String userstatus = request.getParameter("userstatus");
 		List<Grade> grades = gradeService.selectByIdcard(idcard);
 		System.out.println(JSONArray.fromObject(grades).toString());
+		
 		if (!StringUtils.isBlank(userstatus) && "1".equals(userstatus)) {
 			if (null != grades && grades.size()>0) {
-				req.put("product", JSONObject.fromObject(productService.selectByPrimaryKey("Y01")).toString());
-				req.put("count", orderInfoService.queryCntByProductId("Y01"));
-			}else {
-				req.put("product", JSONObject.fromObject(productService.selectByPrimaryKey("M01")).toString());
-				req.put("count", orderInfoService.queryCntByProductId("M01"));
+				if ("通过".equals(grades.get(0).getGrade())) {
+					req.put("product", JSONObject.fromObject(productService.selectByPrimaryKey("Y01")).toString());
+					req.put("count", orderInfoService.queryCntByProductId("Y01"));
+				}else {
+					req.put("product", JSONObject.fromObject(productService.selectByPrimaryKey("M01")).toString());
+					req.put("count", orderInfoService.queryCntByProductId("M01"));
+				}
 			}
 		}
 		return req.toString();

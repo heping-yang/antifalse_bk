@@ -78,4 +78,10 @@
     where IDCARD = #{idcard,jdbcType=DECIMAL}
     order by KSTIME desc
   </select>
+  
+  <select id="queryIsPassed" parameterType="java.lang.String" resultType="java.lang.String">
+  	select count(*)
+    from FJB_GRADE t
+    where IDCARD = #{idcard,jdbcType=DECIMAL} and t.grade = '通过'
+  </select>
 </mapper>

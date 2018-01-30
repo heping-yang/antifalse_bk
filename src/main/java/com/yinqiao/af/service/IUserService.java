@@ -15,4 +15,6 @@ public interface IUserService {
     List<User> selectAll();
 
     int updateByPrimaryKey(User record);
+    
+    String queryUserIsEffective(String idcard);
 }

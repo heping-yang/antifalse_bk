@@ -45,4 +45,6 @@ public interface GradeMapper {
     int updateByPrimaryKey(Grade record);
     
     List<Grade> selectByIdcard(String idcard);
+    
+    String queryIsPassed(String idcard);
 }

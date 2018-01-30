@@ -63,10 +63,6 @@ public class OprExam extends BaseAction{
 		String hId = request.getParameter("hId");
 		String type = request.getParameter("type");
 		String examtype = request.getParameter("examtype");
-		HashMap<String, String> paramMap = new HashMap<String, String>();
-		paramMap.put("type", "1");
-		paramMap.put("questionId", "type01001");
-		req.put("qu", JSONArray.fromObject(questionBankService.queryTypeQuestion(paramMap)).toString());
 		int offset = 0;
 		if ("1".equals(questionBankService.isExist(getNextQId(examId,index,1)))) {
 			offset = 1;
@@ -74,6 +70,7 @@ public class OprExam extends BaseAction{
 		req.put("question", JSONArray.fromObject(modelConvert(questionBankService.selectByPrimaryKey(getNextQId(examId,index,offset)))).toString());
 		req.put("index", getNextIndex(index));
 		req.put("total", questionBankService.getExamCount(examId));
+		req.put("symbol", "/");
 		req.put("lastFlag", questionBankService.isExist(getNextQId(examId,index,offset+1)));
 		req.put("questionCnt", questionBankService.getQuestionCount(examId));
 		if (!"select".equals(type)) {
@@ -101,14 +98,15 @@ public class OprExam extends BaseAction{
 		map.put("type", examtype);
 		map.put("examId", examId);
 		map.put("questionId", getNextQId(examId,index,1));
-		System.out.println(JSONArray.fromObject(examService.selectAll()).toString());
 		if ("1".equals(questionBankService.isTypeExist(map))) {
 			offset = 1;
 		}
-		map.put("examId", getNextQId(examId,index,offset));
+		System.out.println(getNextQId(examId,index,offset));
+		map.put("questionId", getNextQId(examId,index,offset));
 		req.put("question", JSONArray.fromObject(modelConvert(questionBankService.queryTypeQuestion(map))).toString());
 		req.put("index", getNextIndex(index));
 		req.put("total", questionBankService.getOneTypeQuestionCount(examtype));
+		req.put("symbol", "/");
 		map.put("questionId", getNextQId(examId,index,offset+1));
 		req.put("lastFlag", questionBankService.isTypeExist(map));
 		req.put("questionCnt", questionBankService.getOneTypeQuestionCount(examtype));

@@ -39,4 +39,8 @@ public class GradeServiceImpl implements IGradeService {
 		return gradeMapper.selectByIdcard(idcard);
 	}
 
+	public String queryIsPassed(String idcard) {
+		return gradeMapper.queryIsPassed(idcard);
+	}
+
 }

@@ -17,4 +17,6 @@ public interface IGradeService {
     int updateByPrimaryKey(Grade record);
     
     List<Grade> selectByIdcard(String idcard);
+    
+    String queryIsPassed(String idcard);
 }

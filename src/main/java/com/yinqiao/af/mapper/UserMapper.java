@@ -43,4 +43,6 @@ public interface UserMapper {
      * @mbg.generated Wed Jan 24 15:20:54 CST 2018
      */
     int updateByPrimaryKey(User record);
+    
+    String queryUserIsEffective(String idcard);
 }
