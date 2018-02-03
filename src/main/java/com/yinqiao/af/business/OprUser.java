@@ -105,6 +105,18 @@ public class OprUser extends BaseAction{
 		return req.toString();
 	}
 	
+	public String userIsExist(HttpServletRequest request, HttpServletResponse response){
+		JSONObject req = new JSONObject();
+		String telnum = request.getParameter("telnum");
+		User user = userService.selectByPrimaryKey(telnum);
+		if (null != user) {
+			req.put("isExist", "1");
+		}else {
+			req.put("isExist", "0");
+		}
+		return req.toString();
+	}
+	
 	private User userCheck(User user){
 		if("1".equals(userService.queryUserIsEffective(user.getIdcard()))){
 			if ("2".equals(user.getUserstatus()) && "1".equals(enrollService.queryIsEnrolled(user.getIdcard()))) {

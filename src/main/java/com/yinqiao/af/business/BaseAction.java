@@ -13,5 +13,4 @@ public abstract class BaseAction {
 		String servNumber = "";
 		return servNumber;
 	}
-
 }

@@ -154,9 +154,12 @@ public class OprExam extends BaseAction{
 			jsonObject.put("wrongCnt",wrongCnt);
 			examHistory.setAnswerRecord(jsonObject.toString());
 			examHistory.setTotalscore(score);
+			examHistory.setUsedtime(secToTime(examHistory.getUpdateTime().getTime(),examHistory.getCreateTime().getTime()));
 			examHistoryService.updateByPrimaryKey(examHistory);
 		}
 	}
+	
+	
 	
 	public String queryExamWrongAnalysis(HttpServletRequest request, HttpServletResponse response){
 		JSONObject req = new JSONObject();
@@ -333,6 +336,38 @@ public class OprExam extends BaseAction{
 		qb.setAnswer(JSONArray.fromObject(list).toString());
 		return qb;
 	}
+	
+    private String secToTime(long stime,long etime) {  
+    	String timeStr = null;   
+    	try {
+    		long time = (stime - etime)/1000;
+	        long minute = 0;  
+	        long second = 0;  
+	        if (time <= 0)  
+	            return "00:00";  
+	        else if(time>=1800){  
+	        	return "30:00";
+	        }else{
+	            minute = time / 60;  
+	            if (minute < 60) {  
+	                second = time % 60;  
+	                timeStr = unitFormat(minute) + ":" + unitFormat(second);  
+	            } 
+	        }
+		} catch (Exception e) {
+			return timeStr;
+		}
+        return timeStr;  
+    }  
+    
+    private String unitFormat(long i) {  
+        String retStr = null;  
+        if (i >= 0 && i < 10)  
+            retStr = "0" + Long.toString(i);  
+        else  
+            retStr = "" + i;  
+        return retStr;  
+    }  
 	
 	public static void main(String[] args) {
 //		try {

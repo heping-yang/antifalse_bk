@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8" isELIgnored="false"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!doctype html>
 <html>
 	<head>
@@ -31,28 +32,19 @@
 	<body>
 		<div class="page">
 			  <ul class="notice_list">
+		  		<li>
+		  			<a href="${pageContext.request.contextPath}/announcement/noticeShow">
+		  			<h4 class="notice_tit ellipsis">关于关于反假货币2018年上半年培训考试通知</h4>
+		  			<p class="notice_date">2018.1.18</p>
+		  			</a>
+		  		</li>
+			  	<c:forEach var="item"   items="${announcements}"   varStatus="status">
 			  		<li>
-			  			<a href="${pageContext.request.contextPath}/announcement/noticeShow">
-			  			<h4 class="notice_tit ellipsis">关于关于反假货币2018年上半年培训考试通知反假货币2018年上半年培训考试通知</h4>
-			  			<p class="notice_date">2018.1.18</p>
-			  			</a>
+			  			<a href="${pageContext.request.contextPath}/announcement/noticeShow?id=${item.msgid}">
+			  			<h4 class="notice_tit">${item.title}</h4>
+			  			<p class="notice_date">${item.addtime}</p>
 			  		</li>
-			  		<li>
-			  			<h4 class="notice_tit">关于反假货币2018年上半年培训考试通知</h4>
-			  			<p class="notice_date">2018.1.18</p>
-			  		</li>
-			  		<li>
-			  			<h4 class="notice_tit">关于反假货币2018年上半年培训考试通知</h4>
-			  			<p class="notice_date">2018.1.18</p>
-			  		</li>
-			  		<li>
-			  			<h4 class="notice_tit">关于反假货币2018年上半年培训考试通知</h4>
-			  			<p class="notice_date">2018.1.18</p>
-			  		</li>
-			  		<li>
-			  			<h4 class="notice_tit">关于反假货币2018年上半年培训考试通知</h4>
-			  			<p class="notice_date">2018.1.18</p>
-			  		</li>
+                 </c:forEach>
 			  </ul>
 		</div>
 		<!--page-->

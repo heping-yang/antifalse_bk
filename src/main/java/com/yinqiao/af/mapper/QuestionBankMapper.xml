@@ -108,11 +108,11 @@
   </select>
   
   <select id="queryTypeQuestionCount" resultType="java.util.Map">
-  	select t.type , count(t.question_id) as typecnt from AF_QUESTION_BANK t group by t.type
+  	select t.type , count(t.question_id) as typecnt from AF_QUESTION_BANK t where EXAM_ID in (select t.exam_id from AF_EXAM_LIST t where t.intensifyflag = '0' and t.showflag = '1') group by t.type
   </select>
   
   <sql id="typeTable">
-  	(select 'type0'||#{type,jdbcType=VARCHAR} as exam_id, 'type0'||#{type,jdbcType=VARCHAR}||lpad(rownum,3,'0') as question_id ,t.type ,t.content ,t.picflag,t.answer,t.standard,t.score from AF_QUESTION_BANK t where t.type = #{type,jdbcType=VARCHAR})
+  	(select 'type0'||#{type,jdbcType=VARCHAR} as exam_id, 'type0'||#{type,jdbcType=VARCHAR}||lpad(rownum,3,'0') as question_id ,t.type ,t.content ,t.picflag,t.answer,t.standard,t.score from V_QUESTION_BANK t where t.type = #{type,jdbcType=VARCHAR})
   </sql>
   
   <select id="getOneTypeQuestionCount" resultType="String" parameterType="String">

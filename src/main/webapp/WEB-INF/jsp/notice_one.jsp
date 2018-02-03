@@ -1,7 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8" isELIgnored="false"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!doctype html>
 <html>
+
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<title>平台公告</title>
@@ -30,30 +32,17 @@
 
 	<body>
 		<div class="page">
-			  <ul class="notice_list">
-			  		<li>
-			  			<a href="${pageContext.request.contextPath}/notice_show.jsp">
-			  			<h4 class="notice_tit ellipsis">关于关于反假货币2018年上半年培训考试通知反假货币2018年上半年培训考试通知</h4>
-			  			<p class="notice_date">2018.1.18</p>
-			  			</a>
-			  		</li>
-			  		<li>
-			  			<h4 class="notice_tit">关于反假货币2018年上半年培训考试通知</h4>
-			  			<p class="notice_date">2018.1.18</p>
-			  		</li>
-			  		<li>
-			  			<h4 class="notice_tit">关于反假货币2018年上半年培训考试通知</h4>
-			  			<p class="notice_date">2018.1.18</p>
-			  		</li>
-			  		<li>
-			  			<h4 class="notice_tit">关于反假货币2018年上半年培训考试通知</h4>
-			  			<p class="notice_date">2018.1.18</p>
-			  		</li>
-			  		<li>
-			  			<h4 class="notice_tit">关于反假货币2018年上半年培训考试通知</h4>
-			  			<p class="notice_date">2018.1.18</p>
-			  		</li>
-			  </ul>
+			  <div class="notice_show">
+			  		 <h3>${announcement.title}</h3>
+			  		 <p class="notice_date">${announcement.addtime}</p>
+			  		 <img class="notice_img" src="${pageContext.request.contextPath}/resources/images/notice.jpg"/>
+			  		 <div class="notice_cont">
+						${announcement.content}
+			  		 </div>
+			  </div>
+			  <div class="bottom">
+			  	宁夏银桥教育培训中心
+			  </div>
 		</div>
 		<!--page-->
 		
