@@ -85,4 +85,8 @@
   		select count(*) from AF_USER t where t.effstart <=sysdate and t.effend >= sysdate and t.idcard = #{idcard,jdbcType=VARCHAR}
   	]]>
   </select>
+  
+   <select id="queryUserCnt" resultType="java.lang.String" parameterType="java.lang.String">
+		select count(*) from AF_USER t where t.telnum = #{telnum,jdbcType=VARCHAR}
+   </select>
 </mapper>

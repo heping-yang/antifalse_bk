@@ -168,14 +168,12 @@ public class OprUser extends BaseAction{
 		System.out.println(JSONArray.fromObject(grades).toString());
 		
 		if (!StringUtils.isBlank(userstatus) && "1".equals(userstatus)) {
-			if (null != grades && grades.size()>0) {
-				if ("通过".equals(grades.get(0).getGrade())) {
+			if (null != grades && grades.size()>0 && "通过".equals(grades.get(0).getGrade())) {
 					req.put("product", JSONObject.fromObject(productService.selectByPrimaryKey("Y01")).toString());
 					req.put("count", orderInfoService.queryCntByProductId("Y01"));
 				}else {
 					req.put("product", JSONObject.fromObject(productService.selectByPrimaryKey("M01")).toString());
 					req.put("count", orderInfoService.queryCntByProductId("M01"));
-				}
 			}
 		}
 		return req.toString();

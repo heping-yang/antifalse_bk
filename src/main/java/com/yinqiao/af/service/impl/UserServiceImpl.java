@@ -39,4 +39,8 @@ public class UserServiceImpl implements IUserService {
 		return userMapper.queryUserIsEffective(idcard);
 	}
 
+	public String queryUserCnt(String telnum) {
+		return userMapper.queryUserCnt(telnum);
+	}
+
 }

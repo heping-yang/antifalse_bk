@@ -17,4 +17,6 @@ public interface IUserService {
     int updateByPrimaryKey(User record);
     
     String queryUserIsEffective(String idcard);
+    
+    String queryUserCnt(String telnum);
 }

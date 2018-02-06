@@ -123,12 +123,13 @@ public class OprExam extends BaseAction{
 	public String queryExamReport(HttpServletRequest request, HttpServletResponse response){
 		JSONObject req = new JSONObject();
 		String hId = request.getParameter("hId");
-		makeReport(hId);
+		String usedtime = request.getParameter("usedtime");
+		makeReport(hId,usedtime);
 		req.put("report", JSONArray.fromObject(examHistoryService.selectByPrimaryKey(hId)).toString());
 		return req.toString();
 	}
 	
-	private void makeReport(String hId){
+	private void makeReport(String hId,String usedtime){
 		ExamHistory examHistory = examHistoryService.selectByPrimaryKey(hId);
 		if (examHistory.getTotalscore() == null || "".equals(examHistory.getTotalscore())) {
 			JSONObject jsonObject = JSONObject.fromObject(examHistory.getAnswerRecord());
@@ -154,7 +155,8 @@ public class OprExam extends BaseAction{
 			jsonObject.put("wrongCnt",wrongCnt);
 			examHistory.setAnswerRecord(jsonObject.toString());
 			examHistory.setTotalscore(score);
-			examHistory.setUsedtime(secToTime(examHistory.getUpdateTime().getTime(),examHistory.getCreateTime().getTime()));
+//			examHistory.setUsedtime(secToTime(examHistory.getUpdateTime().getTime(),examHistory.getCreateTime().getTime()));
+			examHistory.setUsedtime(secToTime(Long.parseLong(50*60*1000+""),Long.parseLong(usedtime)));
 			examHistoryService.updateByPrimaryKey(examHistory);
 		}
 	}
