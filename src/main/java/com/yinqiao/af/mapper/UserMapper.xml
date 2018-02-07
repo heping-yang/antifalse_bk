@@ -82,7 +82,7 @@
   
   <select id="queryUserIsEffective" resultType="java.lang.String" parameterType="java.lang.String">
   	<![CDATA[
-  		select count(*) from AF_USER t where t.effstart <=sysdate and t.effend >= sysdate and t.idcard = #{idcard,jdbcType=VARCHAR}
+  		select count(*) from AF_USER t where t.effstart <=sysdate and t.effend >= sysdate and t.telnum = #{telnum,jdbcType=VARCHAR}
   	]]>
   </select>
   
