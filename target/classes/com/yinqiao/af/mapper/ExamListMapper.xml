@@ -72,4 +72,8 @@
     from AF_EXAM_LIST t
      where t.showflag = 1 order by t.intensifyflag desc, t.exam_id
   </select>
+  
+  <select id="queryExamNameById" parameterType="java.lang.String" resultType="java.lang.String">
+  		select t.name from AF_EXAM_LIST t  where t.exam_id = #{examId,jdbcType=VARCHAR}
+  </select>
 </mapper>

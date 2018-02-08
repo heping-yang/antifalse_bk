@@ -63,6 +63,7 @@ public class OprExam extends BaseAction{
 		String hId = request.getParameter("hId");
 		String type = request.getParameter("type");
 		String examtype = request.getParameter("examtype");
+		String telnum = request.getParameter("telnum");
 		int offset = 0;
 		if ("1".equals(questionBankService.isExist(getNextQId(examId,index,1)))) {
 			offset = 1;
@@ -77,7 +78,7 @@ public class OprExam extends BaseAction{
 			if (!"0".equals(index)) {
 				this.UpdateExamHistory(hId,index,result,userAnswer);
 			}else{
-				examHistoryService.insert(getNewExamHistory(examId, hId,examtype));
+				examHistoryService.insert(getNewExamHistory(telnum,examId, hId,examtype));
 			}
 		}
 		return req.toString();
@@ -93,6 +94,7 @@ public class OprExam extends BaseAction{
 		String hId = request.getParameter("hId");
 		String type = request.getParameter("type");
 		String examtype = request.getParameter("examtype");
+		String telnum = request.getParameter("telnum");
 		int offset = 0;
 		HashMap< String, String> map = new HashMap<String, String>();
 		map.put("type", examtype);
@@ -114,7 +116,7 @@ public class OprExam extends BaseAction{
 			if (!"0".equals(index)) {
 				this.UpdateExamHistory(hId,index,result,userAnswer);
 			}else{
-				examHistoryService.insert(getNewExamHistory(examId, hId,examtype));
+				examHistoryService.insert(getNewExamHistory(telnum,examId, hId,examtype));
 			}
 		}
 		return req.toString();
@@ -217,16 +219,30 @@ public class OprExam extends BaseAction{
 		examHistoryService.updateByPrimaryKey(examHistory);
 	}
 	
-	private ExamHistory getNewExamHistory(String examId,String hId,String type){
+	private ExamHistory getNewExamHistory(String telnum,String examId,String hId,String type){
 		ExamHistory examHistory = new ExamHistory();
 		examHistory.setCreateTime(new Date());
 		examHistory.setExamId(examId);
 		examHistory.sethId(hId);
-		//examHistory.setQuestionId(questionId);
-		//.setTotalscore("");
-		//examHistory.setUpdateTime(updateTime);
-		//examHistory.setUsedtime(usedtime);
-		//examHistory.setUserId(userId);
+		examHistory.setTelnum(telnum);
+		if ("type01".equals(examId)) {
+			examHistory.setExamName("单项选择题");
+			examHistory.setExamType("1");
+		}else if ("type02".equals(examId)) {
+			examHistory.setExamName("多项选择题");
+			examHistory.setExamType("2");
+		}else if ("type03".equals(examId)) {
+			examHistory.setExamName("判断题");
+			examHistory.setExamType("3");
+		}else if ("type04".equals(examId)) {
+			examHistory.setExamName("案例分析题");
+			examHistory.setExamType("4");
+		}else {
+			examHistory.setExamName(examService.queryExamNameById(examId));
+			examHistory.setExamType("0");
+		}
+		examHistory.setIndexnum("0");
+		examHistory.setSurplustime("3000000");
 		examHistory.setAnswerRecord(getNewAnswerRecord(examId,type));
 		return examHistory;
 	}

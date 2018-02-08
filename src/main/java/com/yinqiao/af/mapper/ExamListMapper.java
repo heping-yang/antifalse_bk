@@ -43,4 +43,6 @@ public interface ExamListMapper {
      * @mbg.generated Tue Jan 30 15:51:03 CST 2018
      */
     int updateByPrimaryKey(ExamList record);
+    
+    String queryExamNameById(String examId);
 }

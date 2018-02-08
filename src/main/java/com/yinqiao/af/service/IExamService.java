@@ -15,4 +15,6 @@ public interface IExamService {
     List<ExamList> selectAll();
 
     int updateByPrimaryKey(ExamList record);
+    
+    String queryExamNameById(String examId);
 }

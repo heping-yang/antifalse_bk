@@ -34,4 +34,8 @@ public class ExamServiceImpl implements IExamService {
 	public int updateByPrimaryKey(ExamList record) {
 		return examListMapper.updateByPrimaryKey(record);
 	}
+
+	public String queryExamNameById(String examId) {
+		return examListMapper.queryExamNameById(examId);
+	}
 }
