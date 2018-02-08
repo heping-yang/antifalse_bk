@@ -64,6 +64,7 @@ public class OprExam extends BaseAction{
 		String type = request.getParameter("type");
 		String examtype = request.getParameter("examtype");
 		String telnum = request.getParameter("telnum");
+		String surplustime = request.getParameter("surplustime");
 		int offset = 0;
 		if ("1".equals(questionBankService.isExist(getNextQId(examId,index,1)))) {
 			offset = 1;
@@ -76,11 +77,14 @@ public class OprExam extends BaseAction{
 		req.put("questionCnt", questionBankService.getQuestionCount(examId));
 		if (!"select".equals(type)) {
 			if (!"0".equals(index)) {
-				this.UpdateExamHistory(hId,index,result,userAnswer);
+				this.UpdateExamHistory(hId,index,result,userAnswer,surplustime);
 			}else{
-				examHistoryService.insert(getNewExamHistory(telnum,examId, hId,examtype));
+				if ("0".equals(examHistoryService.isExist(hId))) {
+					examHistoryService.insert(getNewExamHistory(telnum,examId, hId,examtype));
+				}
 			}
 		}
+		req.put("userAnswer", getUserAnswer(hId,index));
 		return req.toString();
 	}
 	
@@ -95,6 +99,7 @@ public class OprExam extends BaseAction{
 		String type = request.getParameter("type");
 		String examtype = request.getParameter("examtype");
 		String telnum = request.getParameter("telnum");
+		String surplustime = request.getParameter("surplustime");
 		int offset = 0;
 		HashMap< String, String> map = new HashMap<String, String>();
 		map.put("type", examtype);
@@ -114,12 +119,21 @@ public class OprExam extends BaseAction{
 		req.put("questionCnt", questionBankService.getOneTypeQuestionCount(examtype));
 		if (!"select".equals(type)) {
 			if (!"0".equals(index)) {
-				this.UpdateExamHistory(hId,index,result,userAnswer);
+				this.UpdateExamHistory(hId,index,result,userAnswer,surplustime);
 			}else{
-				examHistoryService.insert(getNewExamHistory(telnum,examId, hId,examtype));
+				if ("0".equals(examHistoryService.isExist(hId))) {
+					examHistoryService.insert(getNewExamHistory(telnum,examId, hId,examtype));
+				}
 			}
 		}
+		req.put("userAnswer", getUserAnswer(hId,index));
 		return req.toString();
+	}
+	
+	public String getUserAnswer(String hId,String index){
+		ExamHistory examHistory = examHistoryService.selectByPrimaryKey(hId);
+		JSONObject jsonObject = JSONObject.fromObject(examHistory.getAnswerRecord());
+		return (((JSONObject)jsonObject.getJSONArray("data").get(Integer.parseInt(index))).get("answer")).toString();
 	}
 	
 	public String queryExamReport(HttpServletRequest request, HttpServletResponse response){
@@ -157,6 +171,7 @@ public class OprExam extends BaseAction{
 			jsonObject.put("wrongCnt",wrongCnt);
 			examHistory.setAnswerRecord(jsonObject.toString());
 			examHistory.setTotalscore(score);
+			examHistory.setIndexnum((rightCnt+wrongCnt-1)+"");
 //			examHistory.setUsedtime(secToTime(examHistory.getUpdateTime().getTime(),examHistory.getCreateTime().getTime()));
 			examHistory.setUsedtime(secToTime(Long.parseLong(50*60*1000+""),Long.parseLong(usedtime)));
 			examHistoryService.updateByPrimaryKey(examHistory);
@@ -209,11 +224,13 @@ public class OprExam extends BaseAction{
 		return wrongsArray;
 	}
 	
-	private void UpdateExamHistory(String hId,String index,String result,String userAnswer){
+	private void UpdateExamHistory(String hId,String index,String result,String userAnswer,String surplustime){
 		ExamHistory examHistory = examHistoryService.selectByPrimaryKey(hId);
 		JSONObject jsonObject = JSONObject.fromObject(examHistory.getAnswerRecord());
 		((JSONObject)jsonObject.getJSONArray("data").get(Integer.parseInt(index)-1)).put("answer",userAnswer);
 		((JSONObject)jsonObject.getJSONArray("data").get(Integer.parseInt(index)-1)).put("result",result);
+		examHistory.setSurplustime(surplustime);
+		examHistory.setIndexnum(index);
 		examHistory.setAnswerRecord(jsonObject.toString());
 		examHistory.setUpdateTime(new Date());
 		examHistoryService.updateByPrimaryKey(examHistory);
@@ -386,7 +403,13 @@ public class OprExam extends BaseAction{
             retStr = "" + i;  
         return retStr;  
     }  
-	
+    
+	public String queryHistoryList(HttpServletRequest request, HttpServletResponse response){
+		String telnum = request.getParameter("telnum");
+		JSONObject req = new JSONObject();
+		req.put("list", JSONArray.fromObject(examHistoryService.selectAll(telnum)).toString());
+		return req.toString();
+	}
 	public static void main(String[] args) {
 //		try {
 //			System.out.println(URLEncoder.encode("{comboType:daycard1}","UTF-8"));

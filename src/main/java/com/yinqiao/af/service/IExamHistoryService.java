@@ -13,7 +13,9 @@ public interface IExamHistoryService {
 
     ExamHistory selectByPrimaryKey(String hId);
 
-    List<ExamHistory> selectAll();
+    List<ExamHistory> selectAll(String telnum);
 
     int updateByPrimaryKey(ExamHistory record);
+    
+    String isExist(String hId);
 }

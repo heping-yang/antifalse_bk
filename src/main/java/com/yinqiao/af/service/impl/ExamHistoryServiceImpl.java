@@ -27,11 +27,15 @@ public class ExamHistoryServiceImpl implements IExamHistoryService {
 		return examHistoryMapper.selectByPrimaryKey(hId);
 	}
 
-	public List<ExamHistory> selectAll() {
-		return examHistoryMapper.selectAll();
+	public List<ExamHistory> selectAll(String telnum) {
+		return examHistoryMapper.selectAll(telnum);
 	}
 
 	public int updateByPrimaryKey(ExamHistory record) {
 		return examHistoryMapper.updateByPrimaryKey(record);
+	}
+
+	public String isExist(String hId) {
+		return examHistoryMapper.isExist(hId);
 	}
 }
