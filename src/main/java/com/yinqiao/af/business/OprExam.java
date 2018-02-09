@@ -52,6 +52,27 @@ public class OprExam extends BaseAction{
 		return req.toString();
 	}
 	
+	public String queryAnsweredCnt(HttpServletRequest request, HttpServletResponse response){
+		JSONObject req = new JSONObject();
+		String hId = request.getParameter("hId");
+		ExamHistory examHistory = examHistoryService.selectByPrimaryKey(hId);
+		JSONObject jsonObject = JSONObject.fromObject(examHistory.getAnswerRecord());
+		JSONArray jsonArray = jsonObject.getJSONArray("data");
+		int answeredCnt = 0;
+		int noAnsweredCnt = 0;
+		for (int i = 0; i < jsonArray.size(); i++) {
+			JSONObject job = jsonArray.getJSONObject(i);
+			if (!StringUtils.isBlank(job.get("result").toString())) {
+				answeredCnt++;
+			}else {
+				noAnsweredCnt++;
+			}
+		}
+		req.put("answeredCnt", answeredCnt);
+		req.put("noAnsweredCnt", noAnsweredCnt);
+		return req.toString();
+	}
+	
 	
 	//类型题下一题
 	public String queryNextQuestion(HttpServletRequest request, HttpServletResponse response){
@@ -166,7 +187,9 @@ public class OprExam extends BaseAction{
 			if (tempList.size()>0) {
 				score = questionBankService.getScore(tempList);
 			}
-			System.out.println(score);
+			if (StringUtils.isBlank(score)) {
+				score = "0";
+			}
 			jsonObject.put("rightCnt",rightCnt);
 			jsonObject.put("wrongCnt",wrongCnt);
 			examHistory.setAnswerRecord(jsonObject.toString());
