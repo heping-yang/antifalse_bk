@@ -52,6 +52,44 @@ public class OprExam extends BaseAction{
 		return req.toString();
 	}
 	
+	//滑动答题-选题
+	public String queryOneExam(HttpServletRequest request, HttpServletResponse response){
+		JSONObject req = new JSONObject();
+		String examId = request.getParameter("examId");
+		String hId = request.getParameter("hId");
+		String type = request.getParameter("type");
+		String examtype = request.getParameter("examtype");
+		String telnum = request.getParameter("telnum");
+		
+		return req.toString();
+	}
+	
+	//滑动答题-交卷
+	public String queryHandInExam(HttpServletRequest request, HttpServletResponse response){
+		JSONObject req = new JSONObject();
+		String examId = request.getParameter("examId");
+		String hId = request.getParameter("hId");
+		String type = request.getParameter("type");
+		String examtype = request.getParameter("examtype");
+		String telnum = request.getParameter("telnum");
+		
+		examHistoryService.insert(getNewExamHistory(telnum,examId, hId,examtype));
+		return req.toString();
+	}
+	
+	//滑动答题-存档
+	public String querySaveExam(HttpServletRequest request, HttpServletResponse response){
+		JSONObject req = new JSONObject();
+		String examId = request.getParameter("examId");
+		String hId = request.getParameter("hId");
+		String type = request.getParameter("type");
+		String examtype = request.getParameter("examtype");
+		String telnum = request.getParameter("telnum");
+		
+		examHistoryService.insert(getNewExamHistory(telnum,examId, hId,examtype));
+		return req.toString();
+	}
+	
 	public String queryAnsweredCnt(HttpServletRequest request, HttpServletResponse response){
 		JSONObject req = new JSONObject();
 		String hId = request.getParameter("hId");
