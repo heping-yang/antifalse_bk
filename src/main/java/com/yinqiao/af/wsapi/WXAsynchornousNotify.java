@@ -32,8 +32,10 @@ import org.xml.sax.SAXException;
 import com.ibm.icu.util.Calendar;
 import com.ibm.icu.util.GregorianCalendar;
 import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
+import com.yinqiao.af.model.ApplyInfo;
 import com.yinqiao.af.model.OrderInfo;
 import com.yinqiao.af.model.User;
+import com.yinqiao.af.service.IApplyService;
 import com.yinqiao.af.service.IEnrollService;
 import com.yinqiao.af.service.IOrderInfoService;
 import com.yinqiao.af.service.IUserService;
@@ -54,6 +56,9 @@ public class WXAsynchornousNotify {
 	
 	@Autowired
 	private IEnrollService enrollService;
+	
+	@Autowired
+	private IApplyService applyService;
 	/**
 	 * 微信支付异步通知接口，修改订单状态
 	 * @Title: excute   
@@ -108,7 +113,14 @@ public class WXAsynchornousNotify {
 							user.setEffend(this.getMonthDate(36));
 						}
 						userService.updateByPrimaryKey(user);
+					}else{
+						ApplyInfo applyInfo = applyService.queryApplyInfoByTelnum(orderInfo.getTelnum());
+						if (applyInfo != null) {
+							applyInfo.setStatus(3L);
+							applyService.updateApplyInfoByPrimaryKey(applyInfo);
+						}
 					}
+					
 				}else{
 					result = this.setXml("fail", "订单不存在");
 				}

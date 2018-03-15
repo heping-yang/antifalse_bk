@@ -62,7 +62,7 @@
 			  </div>
 		</div>
 		<!--page-->
-		
+		<img src="${pageContext.request.contextPath}/resources/images/yinqiao.jpg"/>
 		 
 		<script src="${pageContext.request.contextPath}/resources/js/jquery-2.1.4.min.js" type="text/javascript" charset="utf-8"></script> 
 		<script src="${pageContext.request.contextPath}/resources/js/jquery.tap.min.js" type="text/javascript" charset="utf-8"></script>

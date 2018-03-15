@@ -187,6 +187,6 @@ public class OprUser extends BaseAction{
 	}
 	
 	public static void main(String[] args) {
-
+		System.out.println("00062009010199918030815330959080".substring(3,10));
 	}
 }
