@@ -3,22 +3,22 @@ package com.yinqiao.af.business;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import net.sf.json.JSONObject;
-
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.yinqiao.af.model.ApplyInfo;
 import com.yinqiao.af.model.RegionInfo;
 import com.yinqiao.af.service.IApplyService;
 
 @Service("applyApi")
 public class OprApply extends BaseAction{
+	
+	private static Logger Logger = LoggerFactory.getLogger(OprApply.class);
 	
 	@Autowired
 	private IApplyService applyService;
@@ -31,11 +31,16 @@ public class OprApply extends BaseAction{
 		if (appInfo != null && !StringUtils.isBlank(appInfo.getBmkid())) {
 			status = appInfo.getStatus() + "";
 			req.put("applyInfo", appInfo);
-			req.put("region", applyService.queryRegByBankName("中国邮政储蓄银行股份有限公司银川市燕庆街营业所"));
+			req.put("region", applyService.queryRegByBankName(appInfo.getBranch()));
+			String checkEnd = applyService.queryCheckEnd(appInfo.getKstime());
+			if (!StringUtils.isBlank(checkEnd)) {
+				req.put("checkEnd", checkEnd.substring(4, 6) + "月" + checkEnd.substring(6, 8) + "日");
+			}
 		}
 		req.put("ksstatus", applyService.isExamStatus());
 		req.put("status", status);
 		req.put("nation", applyService.selectAllNation());
+		
 		return req.toString();
 	}
 	
@@ -55,9 +60,9 @@ public class OprApply extends BaseAction{
 		JSONObject req = new JSONObject();
 		String zonename = request.getParameter("zonename");
 		String diquname = request.getParameter("diquname");
-		String areaid = changeAare("6401");
-		req.put("examDate", applyService.selectExamDate("6401"));
-		req.put("bankType", applyService.queryBankType("兴庆区"));
+		String areaid = changeAare(diquname);
+		req.put("examDate", applyService.selectExamDate(areaid));
+		req.put("bankType", applyService.queryBankType(zonename));
 		return req.toString();
 	}
 	
@@ -66,8 +71,8 @@ public class OprApply extends BaseAction{
 		String zonename = request.getParameter("zonename");
 		String bankType = request.getParameter("bankType");
 		HashMap<String, String> map = new HashMap<String, String>();
-		map.put("zonename", "兴庆区");
-		map.put("banktypename", "中信银行");
+		map.put("zonename", zonename);
+		map.put("banktypename", bankType);
 		req.put("subbankName", applyService.queryBankName(map));
 		return req.toString();
 	}
@@ -75,8 +80,8 @@ public class OprApply extends BaseAction{
 	public String queryExamAllownums(HttpServletRequest request, HttpServletResponse response){
 		JSONObject req = new JSONObject();
 		String examdatetime = request.getParameter("examdatetime");
-		req.put("allownums", Integer.parseInt(applyService.queryExamAllownums("测试时间"))-Integer.parseInt(applyService.queryApplyCnt("测试时间")));
-		String checkEnd = applyService.queryCheckEnd("测试时间");
+		req.put("allownums", Integer.parseInt(applyService.queryExamAllownums(examdatetime))-Integer.parseInt(applyService.queryApplyCnt(examdatetime)));
+		String checkEnd = applyService.queryCheckEnd(examdatetime);
 		if (!StringUtils.isBlank(checkEnd)) {
 			req.put("checkEnd", checkEnd.substring(4, 6) + "月" + checkEnd.substring(6, 8) + "日");
 		}
@@ -85,7 +90,7 @@ public class OprApply extends BaseAction{
 	
 	public String insertApply(HttpServletRequest request, HttpServletResponse response){
 		JSONObject req = new JSONObject();
-//		try {
+		try {
 			String idcard = request.getParameter("idcard");
 			String userName = request.getParameter("userName");
 			String telnum = request.getParameter("telnum");
@@ -94,7 +99,7 @@ public class OprApply extends BaseAction{
 			String nation = request.getParameter("nation");
 			String bankName = request.getParameter("bankName");
 			String examDate = request.getParameter("examDate");
-			RegionInfo reginfo = applyService.queryRegByBankName("中国邮政储蓄银行股份有限公司银川市燕庆街营业所");
+			RegionInfo reginfo = applyService.queryRegByBankName(bankName);
 			ApplyInfo appInfo = applyService.queryApplyInfoByIdcard(idcard);
 			if (appInfo != null && !StringUtils.isBlank(appInfo.getBmkid())) {
 				appInfo.setBankinfo(reginfo.getBanktype());
@@ -111,7 +116,7 @@ public class OprApply extends BaseAction{
 				appInfo.setMobicode(telnum);//电话
 				Map<String,String> map = convertIdcard(idcard);
 				appInfo.setSex(map.get("sex"));//性别
-				appInfo.setNation(applyService.queryNationId("汉族"));//名族
+				appInfo.setNation(applyService.queryNationId(nation));//名族
 				appInfo.setBirthday(map.get("birthday"));//生日
 				appInfo.setBankinfo(reginfo.getBanktype());
 				appInfo.setBankcity(reginfo.getBankid());
@@ -122,10 +127,10 @@ public class OprApply extends BaseAction{
 				applyService.insertApplyInfo(appInfo);
 			}
 			req.put("req", "success");
-//		} catch (Exception e) {
-//			System.out.println(e.getMessage());
-//			req.put("req","failed");
-//		}
+		} catch (Exception e) {
+			Logger.info(e.getMessage());
+			req.put("req","failed");
+		}
 		return req.toString();
 	}
 	

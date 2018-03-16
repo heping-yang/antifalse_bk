@@ -97,22 +97,24 @@ public class WXAsynchornousNotify {
 					orderInfo.setAmount(total_fee);
 					orderInfo.setOrderId(orderId);
 					orderInfoService.updateByPrimaryKey(orderInfo);//支付信息更新
-					User user = userService.selectByPrimaryKey(orderInfo.getTelnum());
-					if (user != null) {
-						if ("M01".equals(orderInfo.getProductId())) {
-							if ("1".equals(enrollService.queryIsEnrolled(user.getIdcard()))) {
-								user.setUserstatus("3");
-							}else {
-								user.setUserstatus("2");
+					if ("M01".equals(orderInfo.getProductId()) || "Y01".equals(orderInfo.getProductId())) {
+						User user = userService.selectByPrimaryKey(orderInfo.getTelnum());
+						if (user != null) {
+							if ("M01".equals(orderInfo.getProductId())) {
+								if ("1".equals(enrollService.queryIsEnrolled(user.getIdcard()))) {
+									user.setUserstatus("3");
+								}else {
+									user.setUserstatus("2");
+								}
+								user.setEffstart(new Date());
+								user.setEffend(this.getMonthDate(1));
+							}else if("Y01".equals(orderInfo.getProductId())){
+								user.setUserstatus("4");
+								user.setEffstart(new Date());
+								user.setEffend(this.getMonthDate(36));
 							}
-							user.setEffstart(new Date());
-							user.setEffend(this.getMonthDate(1));
-						}else if("Y01".equals(orderInfo.getProductId())){
-							user.setUserstatus("4");
-							user.setEffstart(new Date());
-							user.setEffend(this.getMonthDate(36));
+							userService.updateByPrimaryKey(user);
 						}
-						userService.updateByPrimaryKey(user);
 					}else{
 						ApplyInfo applyInfo = applyService.queryApplyInfoByTelnum(orderInfo.getTelnum());
 						if (applyInfo != null) {
