@@ -95,7 +95,6 @@ public class OprApply extends BaseAction{
 			String userName = request.getParameter("userName");
 			String telnum = request.getParameter("telnum");
 			String diquname = request.getParameter("diquname");
-			diquname = "银川市";
 			String nation = request.getParameter("nation");
 			String bankName = request.getParameter("bankName");
 			String examDate = request.getParameter("examDate");
