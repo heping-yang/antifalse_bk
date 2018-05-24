@@ -27,23 +27,16 @@
 						<li class="item">
 							<div class="item_wrap clearfix pr">
 								<span for="" class="icon_select"></span>
-
 								<div class="item_cont l">
-
 									<p class="item_address">A.银川市金</p>
-
 								</div>
-
 							</div>
 						</li>
 						<li class="item">
 							<div class="item_wrap clearfix pr">
 								<span for="" class="icon_select"></span>
-
 								<div class="item_cont l">
-
 									<p class="item_address">B.银川市金城大众巷凤</p>
-
 								</div>
 
 							</div>
@@ -51,31 +44,21 @@
 						<li class="item">
 							<div class="item_wrap clearfix pr">
 								<span for="" class="icon_select"></span>
-
 								<div class="item_cont l">
-
 									<p class="item_address">C.银川市金城大众巷凤区新</p>
-
 								</div>
-
 							</div>
 						</li>
 						<li class="item">
 							<div class="item_wrap clearfix pr">
 								<span for="" class="icon_select"></span>
-
 								<div class="item_cont l">
-
 									<p class="item_address">D.银川市金城大众</p>
-
 								</div>
-
 							</div>
 						</li>
 					</ul>
-
 				</div>
-
 			</article>
 		</div>
 		<div class="order_receiving ">
