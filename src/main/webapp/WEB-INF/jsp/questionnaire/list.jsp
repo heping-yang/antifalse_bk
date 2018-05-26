@@ -15,9 +15,11 @@
 	<body>
 		<!-- -->
 		<div id="page_cont">
+			<!-- 
 			<div class="header clearfix">
 				<p>问卷调查</p>
 			</div>
+			 -->
 			<div class="order_receiving">
 				<article class="total">
 					<div class="tab_cont on">

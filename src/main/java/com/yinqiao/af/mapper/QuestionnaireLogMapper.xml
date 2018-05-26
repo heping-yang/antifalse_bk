@@ -65,4 +65,8 @@
     select LOGSID, QUESTIONID, TESTID, TESTANSWER, WJNUMS
     from WJ_LOGS
   </select>
+  
+  <select id="queryMaxIndex" parameterType="java.lang.String" resultType="java.lang.String">
+  	select max(substr(t.questionid,4,6)) from WJ_LOGS t where substr(t.questionid,0,3) = #{regCode,jdbcType=VARCHAR}
+  </select>
 </mapper>

@@ -1,10 +1,14 @@
 package com.yinqiao.af.controller;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONObject;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,18 +44,27 @@ public class QuestionnaireController {
 		return "questionnaire/index";
 	}
 	
-	@RequestMapping(value = "/save", method = RequestMethod.GET)
+	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	@ResponseBody
-	public String save(HttpServletRequest request,HttpServletResponse response, ModelMap model) {
+	public void save(HttpServletRequest request,HttpServletResponse response, ModelMap model) {
+		System.out.println("save");
 		JSONObject obj = JSONObject.fromObject(request.getParameter("answer"));
-		//String index =  getIndex((String)obj.get("1"));
-		String index = "YCS001";
-		if ("1".equals(questionnaireLogService.insertRecords(obj, index))) {
-			return index;
+		JSONObject json = new JSONObject();
+		String index =  getIndex((String)obj.get("1"));
+		if (questionnaireLogService.insertRecords(obj, index) == 1) {
+			json.put("res", "success");
+			json.put("index", index);
 		}else {
-			return "fail";
+			json.put("res", "fail");
 		}
-		
+		PrintWriter writer = null;
+		try {
+			writer = response.getWriter();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		writer.print(json.toString());
+		writer.close();	
 	}
 	
 	private String getIndex(String regName){
@@ -60,8 +73,25 @@ public class QuestionnaireController {
 			regCode = "YCS";
 		}else if ("B".equals(regName)) {
 			regCode = "WZS";
+		}else if ("C".equals(regName)) {
+			regCode = "QTX";
+		}else if ("D".equals(regName)) {
+			regCode = "GCZ";
+		}else if ("E".equals(regName)) {
+			regCode = "XQC";
+		}else if ("F".equals(regName)) {
+			regCode = "YSC";
+		}else if ("G".equals(regName)) {
+			regCode = "LMC";
+		}else if ("H".equals(regName)) {
+			regCode = "LFC";
 		}
-		return questionnaireLogService.getIndex(regCode);
+		String index = questionnaireLogService.queryMaxIndex(regCode);
+		if (StringUtils.isBlank(index)) {
+			return regCode + "001"; 
+		}else {
+			return regCode +  String.format("%03d", Integer.parseInt(index)+1);
+		}
 	}
 	
 	public static void main(String[] args) {

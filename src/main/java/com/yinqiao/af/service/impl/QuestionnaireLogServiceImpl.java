@@ -44,21 +44,22 @@ public class QuestionnaireLogServiceImpl implements IQuestionnaireLogService {
 	public int insertRecords(JSONObject obj , String index) {
 		try {
 			QuestionnaireLog record = new QuestionnaireLog();
-			record.setLogsid(UUID.randomUUID().toString().replaceAll("-", ""));
 			record.setWjnums("WJ001");
 			record.setQuestionid(index);
 			for (int i = 1; i <= 20; i++) {
+				record.setLogsid(UUID.randomUUID().toString().replaceAll("-", ""));
 				record.setTestid(""+i);
 				record.setTestanswer((String)obj.get(""+i));
+				questionnaireLogMapper.insert(record);
 			}
 		} catch (Exception e) {
+			System.out.println(e.getMessage());
 			return 0;
 		}
 		return 1;
 	}
 
-	public String getIndex(String regName) {
-		// TODO Auto-generated method stub
-		return null;
+	public String queryMaxIndex(String regCode) {
+		return questionnaireLogMapper.queryMaxIndex(regCode);
 	}	
 }

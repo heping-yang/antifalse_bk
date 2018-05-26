@@ -14,4 +14,6 @@ public interface QuestionnaireLogMapper {
     List<QuestionnaireLog> selectAll();
 
     int updateByPrimaryKey(QuestionnaireLog record);
+    
+    String queryMaxIndex(String regCode);
 }

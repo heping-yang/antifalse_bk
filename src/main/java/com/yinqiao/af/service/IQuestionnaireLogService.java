@@ -20,5 +20,5 @@ public interface IQuestionnaireLogService {
 
     int updateByPrimaryKey(QuestionnaireLog record);
     
-    String getIndex(String regName);
+    String queryMaxIndex(String regCode);
 }

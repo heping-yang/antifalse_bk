@@ -15,10 +15,12 @@
 	<body>
 		<!-- -->
 		<div id="page_cont">
+			<!-- 
 			<div class="header clearfix">
 				<a class="wap-arrow" href="#"><img src="${pageContext.request.contextPath}/resources/questionnaire/images/header_arrow_l.png"></a>
 				<p>问卷调查</p>
 			</div>
+			 -->
 			 <h3 class="question_name">第五套人民币纸币和人民币硬币<br>普通纪念币流通质量调查问卷</h3>
 				    <p class="description">
 					您好!为了解社会公众对人民币质量的意见建议，人民银行组织本次问卷调查，感谢您的参与，欢迎您提出宝贵意见和建议！您的意见对于我们来说非常重要，请您如实填写，我们保证调查结果只用于内部工作研究。
@@ -240,7 +242,7 @@
 			</div>
 			<div class="order_receiving">
 				<article class="total sms_list">
-					<p class="topic">4、您认为第五套人民币纸币票面整体印刷质量（）</p>
+					<p class="topic">4、您认为第五套人民币纸币票面整体印刷质量（）<font style="color: #ff0000;">（可多选）</font></p>
 					<div class="tab_cont on">
 						<ul class="clearfix order_list" id="4">
 							<li class="item">
@@ -981,7 +983,7 @@
 					
 					<p class="topic">14、若对人民币硬币进行改版升级，您的建议是（）<font style="color: #ff0000;">（最多选2项）</font></p>
 					<div class="tab_cont on">
-						<ul class="clearfix order_list">
+						<ul class="clearfix order_list" id="14">
 							<li class="item">
 								<div class="item_wrap clearfix pr">
 									<span for="" class="icon_select"></span>
@@ -1400,13 +1402,24 @@
 				</div>
 			</div>
 		</div>
-		<div class="modal_suc modal_master2">
+		<div class="modal_suc modal_master2 pop2">
 			<div class="modal_body">
 				<div class="modal_close"></div>
 				<h3 class="modal_tit">提示</h3>
-				<p class="msg_affirm">恭喜你完成问卷调查，请将问卷号XXXXX告知调查人，谢谢您的配合!</p> 
+				<p class="msg_affirm">恭喜你完成问卷调查，请将问卷号<span id="popText2"></span>告知调查人，谢谢您的配合!</p> 
 				<div class="btn_box" style="margin: 20px 5%;">
-					<div class="btn btn_outline">我知道了</div>
+					<div class="btn btn_outline skip">我知道了</div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="modal_suc modal_master2 pop">
+			<div class="modal_body">
+				<div class="modal_close"></div>
+				<h3 class="modal_tit">提示</h3>
+				<p class="msg_affirm" id="popText"></p> 
+				<div class="btn_box" style="margin: 20px 5%;">
+					<div class="btn btn_outline cancel">我知道了</div>
 				</div>
 			</div>
 		</div>
@@ -1452,30 +1465,89 @@
 						}
 					}
 					
+					function maxAndmutexSelect(that,num,option){
+						console.log(that.parent().find(".active").find(".option").html())
+						if(that.parent().find(".active").find(".option").html() == option){
+							selectOne(that);
+						}else{
+							var count = that.parent().find(".active").length;
+							if(count < num || that.hasClass("active")){
+								activeOne(that)
+							}
+						}
+					}
+					
 					var answer = "";
+					var error = "";
 					
 					function checkDate(){
+						var error = "";
 						answer += "{"
 						for(var i=1;i<=20;i++){
 							console.log(i);
 							if(i==1){
 								answer += i+":'";	
 							}else{
-								answer += ",'"+i+":'";
+								answer += "',"+i+":'";
 							}
-							$("#"+i).find(".active").each(function(){
-								answer += $(this).find(".option").html();
-							});
+							if($("#"+i).find(".active").length > 0){
+								$("#"+i).find(".active").each(function(){
+									answer += $(this).find(".option").html();
+								});
+							}else{
+								error += i+",";
+							}
 							if(i=="20"){
 								answer += "'";	
 							}
 						}
 						answer += "}"
-						console.log(answer);
+						if(error != ''){
+							popShow(error.substring(0,error.length-1) + "题没有作答，请作答！")
+						}else{
+							submitData(answer);
+						}
 					}
 					
+					var flag1 = "0";
 					function submitData(answer){
-						
+						if(flag1 == "0"){
+							flag1 = "1";
+							$.ajax({
+								url:"${pageContext.request.contextPath}/questionnaire/save",
+								data:{"answer":answer},
+								type:"post",
+							    dataType: "json",
+							    async:true,
+							    beforeSend: function(){
+							    	popShow("数据正在提交......");
+							    },
+							    success:function(data){
+							    	console.log(data);
+							    	$('.modal_suc').hide();
+							    	if(data.res == 'success'){
+							    		popShow2(data.index)
+							    	}else{
+							    		popShow("处理失败，请联系管理员！");
+							    	}				    						
+							    	flag1 = "0";
+								}
+							}); 
+						}else{
+							popShow("数据正在提交,请稍后再试！");
+						}
+					}
+					
+					function popShow(text){
+						$(".modal_bg").show();
+						$("#popText").html(text);
+						$(".pop").show();
+					}
+					
+					function popShow2(text){
+						$(".modal_bg").show();
+						$("#popText2").html(text);
+						$(".pop2").show();
 					}
 					
 					//选单
@@ -1502,30 +1574,34 @@
 							if(that.find(".option").html() == "E"){
 								mutexOne(that,"E");
 							}else{
-								maxSelect(that,3);
+								maxAndmutexSelect(that,3,"E")
 							}
 						}else if(index == 9){
-							maxSelect(that,2);
+							if(that.find(".option").html() == "E"){
+								mutexOne(that,"E");
+							}else{
+								maxAndmutexSelect(that,2,"E")
+							}
 						}else if(index == 10){
-							maxSelect(that,2);
+							if(that.find(".option").html() == "E"){
+								mutexOne(that,"E");
+							}else{
+								maxAndmutexSelect(that,2,"E")
+							}
 						}else if(index == 11){
 							selectOne(that);
 						}else if(index == 12){
 							activeOne(that);
 						}else if(index == 13){
-							mutexOne(that,"E")
+							maxSelect(that,2);
 						}else if(index == 14){
-							if(that.find(".option").html() == "D"){
-								mutexOne(that,"D");
+							if(that.find(".option").html() == "E"){
+								mutexOne(that,"E");
 							}else{
-								maxSelect(that,2);
+								maxAndmutexSelect(that,2,"E")
 							}
 						}else if(index == 15){
-							if(that.find(".option").html() == "D"){
-								mutexOne(that,"D");
-							}else{
-								maxSelect(that,2);
-							}
+							activeOne(that);
 						}else if(index == 16){
 							selectOne(that);
 						}else if(index == 17){
@@ -1554,10 +1630,16 @@
 						modal_close();
 						$(".share").hide()
 					})
-					//关闭
-					$(".btn_cancel").tap(function() {
+
+					$(".cancel").tap(function(){
 						modal_close();
+						$(".share").hide()
 					})
+					
+					$(".skip").tap(function(){
+						window.location.href = "${pageContext.request.contextPath}/questionnaire/list";
+					})
+					
 					$(".modal_close").tap(function() {
 						modal_close();
 					})
