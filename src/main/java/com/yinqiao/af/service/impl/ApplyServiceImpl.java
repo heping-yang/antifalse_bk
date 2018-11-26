@@ -9,9 +9,12 @@ import org.springframework.stereotype.Service;
 import com.yinqiao.af.mapper.ApplyInfoMapper;
 import com.yinqiao.af.mapper.ExamDateMapper;
 import com.yinqiao.af.mapper.NationInfoMapper;
+import com.yinqiao.af.mapper.OriginMapper;
 import com.yinqiao.af.mapper.RegionInfoMapper;
 import com.yinqiao.af.model.ApplyInfo;
+import com.yinqiao.af.model.ExamDate;
 import com.yinqiao.af.model.NationInfo;
+import com.yinqiao.af.model.OriginInfo;
 import com.yinqiao.af.model.RegionInfo;
 import com.yinqiao.af.service.IApplyService;
 
@@ -20,14 +23,18 @@ public class ApplyServiceImpl implements IApplyService {
 
 	@Autowired
 	private RegionInfoMapper regionInfoMapper;
-	
+
 	@Autowired
 	private NationInfoMapper nationInfoMapper;
-	
+
 	@Autowired
 	private ExamDateMapper examDateMapper;
-	
-	@Autowired ApplyInfoMapper applyInfoMapper;
+
+	@Autowired
+	private ApplyInfoMapper applyInfoMapper;
+
+	@Autowired
+	private OriginMapper originMapper;
 
 	public List<String> queryBankType(String zonename) {
 		return regionInfoMapper.queryBankType(zonename);
@@ -88,4 +95,20 @@ public class ApplyServiceImpl implements IApplyService {
 	public ApplyInfo queryApplyInfoByTelnum(String telnum) {
 		return applyInfoMapper.queryApplyInfoByTelnum(telnum);
 	}
+
+	@Override
+	public List<OriginInfo> selectAllOrigin() {
+		return originMapper.selectValidAll();
+	}
+
+	@Override
+	public List<NationInfo> selectValidAll() {
+		return nationInfoMapper.selectValidAll();
+	}
+
+	@Override
+	public ExamDate queryExamdate(String dateid) {
+		return examDateMapper.selectByPrimaryKey(dateid);
+	}
+
 }

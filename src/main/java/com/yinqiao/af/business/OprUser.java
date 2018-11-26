@@ -126,7 +126,7 @@ public class OprUser extends BaseAction{
 	
 	private User userCheck(User user){
 		if("1".equals(userService.queryUserIsEffective(user.getTelnum()))){
-			if ("2".equals(user.getUserstatus()) && "1".equals(enrollService.queryIsEnrolled(user.getIdcard()))) {
+			if ("2".equals(user.getUserstatus()) || "1".equals(enrollService.queryIsEnrolled(user.getIdcard()))) {
 				user.setUserstatus("3");
 				userService.updateByPrimaryKey(user);
 			}

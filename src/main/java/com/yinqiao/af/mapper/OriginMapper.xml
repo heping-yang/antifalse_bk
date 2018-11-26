@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yinqiao.af.mapper.OriginMapper">
+  <resultMap id="BaseResultMap" type="com.yinqiao.af.model.OriginInfo">
+    <id column="ORIGINID" jdbcType="INTEGER" property="originid" />
+    <result column="ORIGINNAME" jdbcType="VARCHAR" property="originname" />
+    <result column="STATUS" jdbcType="VARCHAR" property="status" />
+  </resultMap>
+  
+  <select id="selectValidAll" resultMap="BaseResultMap">
+    select ORIGINID,ORIGINNAME,STATUS
+    from FJB_ORIGIN
+    where STATUS = '1'
+  </select>
+
+</mapper>

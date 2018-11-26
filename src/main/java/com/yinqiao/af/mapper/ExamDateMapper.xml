@@ -104,7 +104,7 @@
   
   <select id="selectExamDate" resultType="java.lang.String" parameterType="java.lang.String">
   	<![CDATA[
-  		select t.examdatetime from Fjb_ExamDate t where t.areaid = #{areaid,jdbcType=DECIMAL} and t.status = '1' and sysdate <= to_date(t.applyenddate , 'yyyyMMdd')
+  		select t.examdatetime from Fjb_ExamDate t where t.areaid = #{areaid,jdbcType=DECIMAL} and t.status = '1' and sysdate <= to_date(t.applyenddate , 'yyyy-MM-dd')
   	]]>
   </select>
   
