@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.yinqiao.af.model.ApplyInfo;
+import com.yinqiao.af.model.ExamArea;
 import com.yinqiao.af.model.ExamDate;
 import com.yinqiao.af.model.NationInfo;
 import com.yinqiao.af.model.OriginInfo;
@@ -17,7 +18,7 @@ public interface IApplyService {
 
 	List<String> selectAllNation();
 	
-	List<NationInfo> selectValidAll();
+	List<NationInfo> selectValidNation();
 
 	List<String> selectExamDate(String areaid);
 
@@ -46,4 +47,8 @@ public interface IApplyService {
 	List<OriginInfo> selectAllOrigin();
 
 	ExamDate queryExamdate(String dateid);
+
+	List<ExamArea> selectValidExamArea();
+
+	List<OriginInfo> selectOrigin(String ksdqid);
 }

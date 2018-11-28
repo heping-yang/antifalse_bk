@@ -99,6 +99,7 @@ public class ApplyInfo {
      * @mbg.generated Wed Mar 14 10:24:16 CST 2018
      */
     private String nation;
+    private String nationname;
 
     /**
      *
@@ -306,6 +307,7 @@ public class ApplyInfo {
      * @mbg.generated Wed Mar 14 10:24:16 CST 2018
      */
     private Long ksdqid;
+    private String ksdqname;
 
     /**
      *
@@ -324,6 +326,7 @@ public class ApplyInfo {
      * @mbg.generated Wed Mar 14 10:24:16 CST 2018
      */
     private String kssource;
+    private String kssourcename;
 
     /**
      *
@@ -1881,4 +1884,28 @@ public class ApplyInfo {
     public void setKsstatus(String ksstatus) {
         this.ksstatus = ksstatus;
     }
+
+	public String getKsdqname() {
+		return ksdqname;
+	}
+
+	public void setKsdqname(String ksdqname) {
+		this.ksdqname = ksdqname;
+	}
+
+	public String getKssourcename() {
+		return kssourcename;
+	}
+
+	public void setKssourcename(String kssourcename) {
+		this.kssourcename = kssourcename;
+	}
+
+	public String getNationname() {
+		return nationname;
+	}
+
+	public void setNationname(String nationname) {
+		this.nationname = nationname;
+	}
 }

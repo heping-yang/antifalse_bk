@@ -28,5 +28,4 @@ public class OriginInfo {
 	public void setStatus(String status) {
 		this.status = status;
 	}
-
 }

@@ -64,6 +64,9 @@
     <result column="KSCOUNT" jdbcType="DECIMAL" property="kscount" />
     <result column="ISZCKS" jdbcType="VARCHAR" property="iszcks" />
     <result column="KSSTATUS" jdbcType="VARCHAR" property="ksstatus" />
+    <result column="NATIONNAME" jdbcType="VARCHAR" property="nationname" />
+    <result column="KSSOURCENAME" jdbcType="VARCHAR" property="kssourcename" />
+    <result column="KSDQNAME" jdbcType="VARCHAR" property="ksdqname" />
   </resultMap>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
     <!--
@@ -221,14 +224,13 @@
   </select>
   
   <select id="queryApplyInfoByIdcard" resultMap="BaseResultMap" parameterType="java.lang.String">
-  	    select BMKID, IDTYPE, IDCARD, KSNAME, NETPSWORD, MOBICODE, EMAIL, BMTIME, ZKZH, SEX, 
-	    NATION, BIRTHDAY, HEIGHTXL, HEIGHTXLOVERTIME, HEIGHTZY, HEIGHTXLSCHOOL, ADDR, ADDRESSDETAIL, 
-	    PHONECODE, POSTCODE, BANKINFO, BANKCITY, BRANCH, ISCONFIRM, CHECKED, CHECKMAN, CHECKTIME, 
-	    FEEMAN, FEETIME, CLFEES, KSFEES, MONEYS, FEESSTATUS, KSDQID, KSTIME, KSSOURCE, KSADDR, 
-	    KCBH, PCCODE, KCH, KSDATE, KSTIMESID, KSTIMES, KSPC, PCID, PXFEES, ISPX, PXFEEMAN, 
-	    PXFEEDATE, PXDATE, ISPRINTPASS, PSDATE, PSDATE2, STATUS, KSCOUNT, ISZCKS, KSSTATUS
-	    from FJB_BMK
-	    where IDCARD = #{idcard,jdbcType=VARCHAR}
+  	    select t1.*,t2.NATIONNAME,t3.ORIGINNAME  as KSSOURCENAME,t4.AREANAME as KSDQNAME
+	    from FJB_BMK t1,FJB_NATION t2,FJB_ORIGIN t3,FJB_EXAMAREA t4
+	    where 
+	    		t1.IDCARD = #{idcard,jdbcType=VARCHAR}
+	    	and t1.nation = t2.nationid
+	    	and t1.kssource = t3.originid
+	    	and t1.ksdqid = t4.areaid
   </select>
   
   <select id="queryApplyInfoByTelnum" resultMap="BaseResultMap" parameterType="java.lang.String">

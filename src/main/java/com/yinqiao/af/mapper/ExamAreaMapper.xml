@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yinqiao.af.mapper.ExamAreaMapper">
+  <resultMap id="BaseResultMap" type="com.yinqiao.af.model.ExamArea">
+    <id column="AREAID" jdbcType="INTEGER" property="areaid" />
+    <result column="AREANAME" jdbcType="VARCHAR" property="areaname" />
+    <result column="STATUS" jdbcType="VARCHAR" property="status" />
+    <result column="PARENTID" jdbcType="VARCHAR" property="parentid" />
+  </resultMap>
+  
+  <select id="selectValidAll" resultMap="BaseResultMap">
+    select AREAID,AREANAME,STATUS,PARENTID
+    from FJB_EXAMAREA
+    where STATUS = '1'
+  </select>
+
+</mapper>

@@ -7,11 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.yinqiao.af.mapper.ApplyInfoMapper;
+import com.yinqiao.af.mapper.ExamAreaMapper;
 import com.yinqiao.af.mapper.ExamDateMapper;
 import com.yinqiao.af.mapper.NationInfoMapper;
 import com.yinqiao.af.mapper.OriginMapper;
 import com.yinqiao.af.mapper.RegionInfoMapper;
 import com.yinqiao.af.model.ApplyInfo;
+import com.yinqiao.af.model.ExamArea;
 import com.yinqiao.af.model.ExamDate;
 import com.yinqiao.af.model.NationInfo;
 import com.yinqiao.af.model.OriginInfo;
@@ -35,6 +37,9 @@ public class ApplyServiceImpl implements IApplyService {
 
 	@Autowired
 	private OriginMapper originMapper;
+
+	@Autowired
+	private ExamAreaMapper examAreaMapper;
 
 	public List<String> queryBankType(String zonename) {
 		return regionInfoMapper.queryBankType(zonename);
@@ -102,13 +107,23 @@ public class ApplyServiceImpl implements IApplyService {
 	}
 
 	@Override
-	public List<NationInfo> selectValidAll() {
+	public List<NationInfo> selectValidNation() {
 		return nationInfoMapper.selectValidAll();
 	}
 
 	@Override
 	public ExamDate queryExamdate(String dateid) {
 		return examDateMapper.selectByPrimaryKey(dateid);
+	}
+
+	@Override
+	public List<ExamArea> selectValidExamArea() {
+		return examAreaMapper.selectValidAll();
+	}
+
+	@Override
+	public List<OriginInfo> selectOrigin(String ksdqid) {
+		return originMapper.selectByParent(ksdqid);
 	}
 
 }

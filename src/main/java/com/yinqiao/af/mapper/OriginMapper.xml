@@ -12,5 +12,11 @@
     from FJB_ORIGIN
     where STATUS = '1'
   </select>
+  
+  <select id="selectByParent" resultMap="BaseResultMap">
+  	select ORIGINID,ORIGINNAME,STATUS
+    from FJB_ORIGIN
+    where STATUS = '1' and ORIGINID like '${parent}%'
+  </select>
 
 </mapper>
