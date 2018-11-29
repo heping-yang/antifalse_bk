@@ -113,7 +113,7 @@
   </select>
   
   <select id="queryCheckEnd" resultType="java.lang.String" parameterType="java.lang.String">
-  	select t.checkend from Fjb_ExamDate t where t.examdatetime = #{examdatetime,jdbcType=VARCHAR}
+  	select t.checkend from Fjb_ExamDate t where t.dateid = #{dateid,jdbcType=VARCHAR}
   </select>
   
   <select id="queryExamdateId" resultType="java.lang.String" parameterType="java.lang.String">

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yinqiao.af.mapper.KStimeDetailMapper">
+  <resultMap id="BaseResultMap" type="com.yinqiao.af.model.KStimeDetail">
+    <id column="DETAILID" jdbcType="INTEGER" property="detailid" />
+    <result column="DETAILTIME" jdbcType="VARCHAR" property="detailtime" />
+    <result column="ALLOWNUMS" jdbcType="VARCHAR" property="allownums" />
+    <result column="STATUS" jdbcType="VARCHAR" property="status" />
+    <result column="KSTIMEID" jdbcType="VARCHAR" property="kstimeid" />
+    <result column="AREAID" jdbcType="VARCHAR" property="areaid" />
+  </resultMap>
+  
+  <select id="selectValidByArea" resultMap="BaseResultMap">
+    select T1.DETAILID,T1.DETAILTIME,T1.ALLOWNUMS,T1.STATUS,T1.KSTIMEID,T1.AREAID
+    from FJB_KSTIME_DETAIL T1,FJB_EXAMDATE T2
+    where 
+    		T1.KSTIMEID = T2.DATEID
+    	AND T2.STATUS = '1'
+    	AND T2.AREAID = #{areaid,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="queryExamAllownums" resultType="java.lang.String">
+  	select ALLOWNUMS from FJB_KSTIME_DETAIL where DETAILID=#{detailid,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+  	select T1.DETAILID,T1.DETAILTIME,T1.ALLOWNUMS,T1.STATUS,T1.KSTIMEID,T1.AREAID
+    from FJB_KSTIME_DETAIL T1
+    where T1.DETAILID = #{detailid,jdbcType=INTEGER}
+  </select>
+
+</mapper>

@@ -220,7 +220,7 @@
   </select>
   
   <select id="queryApplyCnt" resultType="java.lang.String" parameterType="java.lang.String">
-  	select count(*) from Fjb_BMK t where t.kstime = #{kstime,jdbcType=VARCHAR}
+  	select count(*) from Fjb_BMK t where t.kstimesid = #{detailid,jdbcType=VARCHAR}
   </select>
   
   <select id="queryApplyInfoByIdcard" resultMap="BaseResultMap" parameterType="java.lang.String">

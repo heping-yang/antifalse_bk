@@ -6,6 +6,7 @@ import java.util.List;
 import com.yinqiao.af.model.ApplyInfo;
 import com.yinqiao.af.model.ExamArea;
 import com.yinqiao.af.model.ExamDate;
+import com.yinqiao.af.model.KStimeDetail;
 import com.yinqiao.af.model.NationInfo;
 import com.yinqiao.af.model.OriginInfo;
 import com.yinqiao.af.model.RegionInfo;
@@ -20,13 +21,13 @@ public interface IApplyService {
 	
 	List<NationInfo> selectValidNation();
 
-	List<String> selectExamDate(String areaid);
+	List<KStimeDetail> selectExamDate(String areaid);
 
-	String queryExamAllownums(String examdatetime);
+	String queryExamAllownums(String detailid);
 
-	String queryApplyCnt(String examdatetime);
+	String queryApplyCnt(String detailid);
 
-	String queryCheckEnd(String examdatetime);
+	String queryCheckEnd(String dateid);
 
 	int insertApplyInfo(ApplyInfo record);
 
@@ -46,7 +47,7 @@ public interface IApplyService {
 
 	List<OriginInfo> selectAllOrigin();
 
-	ExamDate queryExamdate(String dateid);
+	KStimeDetail queryExamdate(String kstimesid);
 
 	List<ExamArea> selectValidExamArea();
 

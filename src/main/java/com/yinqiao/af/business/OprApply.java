@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import com.yinqiao.af.model.ApplyInfo;
 import com.yinqiao.af.model.ExamArea;
 import com.yinqiao.af.model.ExamDate;
+import com.yinqiao.af.model.KStimeDetail;
 import com.yinqiao.af.model.NationInfo;
 import com.yinqiao.af.model.OriginInfo;
 import com.yinqiao.af.model.RegionInfo;
@@ -43,13 +44,13 @@ public class OprApply extends BaseAction {
 		ApplyInfo appInfo = applyService.queryApplyInfoByIdcard(idcard);
 		if (appInfo != null && !StringUtils.isBlank(appInfo.getBmkid())) {
 			status = appInfo.getStatus() + "";
-			ExamDate examDate = applyService.queryExamdate(appInfo.getKsdate());
+			KStimeDetail examDate = applyService.queryExamdate(appInfo.getKstimesid());
 			if (examDate != null) {
-				appInfo.setKstime(examDate.getExamdatetime());
+				appInfo.setKstime(examDate.getDetailtime());
 			}
 			req.put("applyInfo", appInfo);
 			req.put("region", applyService.queryRegByBankName(appInfo.getBranch()));
-			String checkEnd = applyService.queryCheckEnd(appInfo.getKstime());
+			String checkEnd = applyService.queryCheckEnd(appInfo.getKsdate());
 			if (!StringUtils.isBlank(checkEnd)) {
 				req.put("checkEnd", checkEnd.substring(5, 7) + "月" + checkEnd.substring(8, 10) + "日");
 			}
@@ -106,12 +107,14 @@ public class OprApply extends BaseAction {
 
 	public String queryExamAllownums(HttpServletRequest request, HttpServletResponse response) {
 		JSONObject req = new JSONObject();
-		String examdatetime = request.getParameter("examdatetime");
-		String allonums = applyService.queryExamAllownums(examdatetime);
-		String applycnt = applyService.queryApplyCnt(examdatetime);
+		String detailid = request.getParameter("detailid");
+		String dateid = request.getParameter("dateid");
+		String allownums = request.getParameter("allownums");
+		//String allownums = applyService.queryExamAllownums(detailid);
+		String applycnt = applyService.queryApplyCnt(detailid);
 
-		req.put("allownums", DataUtil.toInteger(allonums, 0) - DataUtil.toInteger(applycnt, 0));
-		String checkEnd = applyService.queryCheckEnd(examdatetime);
+		req.put("allownums", DataUtil.toInteger(allownums, 0) - DataUtil.toInteger(applycnt, 0));
+		String checkEnd = applyService.queryCheckEnd(dateid);
 		if (!StringUtils.isBlank(checkEnd)) {
 			req.put("checkEnd", checkEnd.substring(5, 7) + "月" + checkEnd.substring(8, 10) + "日");
 		}
@@ -127,20 +130,21 @@ public class OprApply extends BaseAction {
 			String ksdqid = request.getParameter("ksdqid");
 			String nation = request.getParameter("nation");
 			String bankName = request.getParameter("bankName");
-			String examDate = request.getParameter("examDate");
+			String dateid = request.getParameter("dateid");
 			String kssource = request.getParameter("kssource");
+			String kstimesid = request.getParameter("kstimesid");
 			RegionInfo reginfo = applyService.queryRegByBankName(bankName);
 			ApplyInfo appInfo = applyService.queryApplyInfoByIdcard(idcard);
 
-			String examdateId = applyService.queryExamdateId(examDate);
 			if (appInfo != null && !StringUtils.isBlank(appInfo.getBmkid())) {
 				appInfo.setBankinfo(reginfo.getBanktype());
 				appInfo.setBankcity(reginfo.getBankid());
 				appInfo.setBranch(bankName);
 				appInfo.setNation(nation);
 				appInfo.setKsdqid(Long.parseLong(ksdqid));
-				appInfo.setKstime(examdateId);
-				appInfo.setKsdate(examdateId);
+				appInfo.setKstime(dateid);
+				appInfo.setKsdate(dateid);
+				appInfo.setKstimesid(kstimesid);
 				appInfo.setStatus(1L);
 				appInfo.setKssource(kssource);
 				applyService.updateApplyInfoByPrimaryKey(appInfo);
@@ -157,8 +161,9 @@ public class OprApply extends BaseAction {
 				appInfo.setBankcity(reginfo.getBankid());
 				appInfo.setBranch(bankName);// 银行名称
 				appInfo.setKsdqid(Long.parseLong(ksdqid));// 地区id
-				appInfo.setKstime(examdateId);// 考试时间名称
-				appInfo.setKsdate(examdateId);// 考试时间id
+				appInfo.setKstime(dateid);// 考试时间名称
+				appInfo.setKsdate(dateid);// 考试时间id
+				appInfo.setKstimesid(kstimesid);
 				appInfo.setBmtime(DataUtil.sdf.format(new Date()));
 				appInfo.setKssource(kssource);
 				applyService.insertApplyInfo(appInfo);
@@ -183,23 +188,6 @@ public class OprApply extends BaseAction {
 		record.setNetpsword("000000");
 		return record;
 	}
-
-	private String changeAare(String diquname) {
-		String areaid = "";
-		if ("银川市".equals(diquname)) {
-			areaid = "6401";
-		} else if ("石嘴山市".equals(diquname)) {
-			areaid = "6402";
-		} else if ("吴忠市".equals(diquname)) {
-			areaid = "6403";
-		} else if ("固原市".equals(diquname)) {
-			areaid = "6404";
-		} else if ("中卫市".equals(diquname)) {
-			areaid = "6405";
-		}
-		return areaid;
-	}
-
 	private Map<String, String> convertIdcard(String idcard) {
 		Map<String, String> map = new HashMap<String, String>();
 		if (!StringUtils.isBlank(idcard) && idcard.length() == 18) {

@@ -9,12 +9,14 @@ import org.springframework.stereotype.Service;
 import com.yinqiao.af.mapper.ApplyInfoMapper;
 import com.yinqiao.af.mapper.ExamAreaMapper;
 import com.yinqiao.af.mapper.ExamDateMapper;
+import com.yinqiao.af.mapper.KStimeDetailMapper;
 import com.yinqiao.af.mapper.NationInfoMapper;
 import com.yinqiao.af.mapper.OriginMapper;
 import com.yinqiao.af.mapper.RegionInfoMapper;
 import com.yinqiao.af.model.ApplyInfo;
 import com.yinqiao.af.model.ExamArea;
 import com.yinqiao.af.model.ExamDate;
+import com.yinqiao.af.model.KStimeDetail;
 import com.yinqiao.af.model.NationInfo;
 import com.yinqiao.af.model.OriginInfo;
 import com.yinqiao.af.model.RegionInfo;
@@ -31,6 +33,9 @@ public class ApplyServiceImpl implements IApplyService {
 
 	@Autowired
 	private ExamDateMapper examDateMapper;
+
+	@Autowired
+	private KStimeDetailMapper kstimeDetailMapper;
 
 	@Autowired
 	private ApplyInfoMapper applyInfoMapper;
@@ -53,20 +58,20 @@ public class ApplyServiceImpl implements IApplyService {
 		return nationInfoMapper.selectAllNation();
 	}
 
-	public List<String> selectExamDate(String areaid) {
-		return examDateMapper.selectExamDate(areaid);
+	public List<KStimeDetail> selectExamDate(String areaid) {
+		return kstimeDetailMapper.selectValidByArea(areaid);
 	}
 
-	public String queryExamAllownums(String examdatetime) {
-		return examDateMapper.queryExamAllownums(examdatetime);
+	public String queryExamAllownums(String detailid) {
+		return kstimeDetailMapper.queryExamAllownums(detailid);
 	}
 
-	public String queryApplyCnt(String examdatetime) {
-		return applyInfoMapper.queryApplyCnt(examdatetime);
+	public String queryApplyCnt(String detailid) {
+		return applyInfoMapper.queryApplyCnt(detailid);
 	}
 
-	public String queryCheckEnd(String examdatetime) {
-		return examDateMapper.queryCheckEnd(examdatetime);
+	public String queryCheckEnd(String dateid) {
+		return examDateMapper.queryCheckEnd(dateid);
 	}
 
 	public int insertApplyInfo(ApplyInfo record) {
@@ -112,8 +117,8 @@ public class ApplyServiceImpl implements IApplyService {
 	}
 
 	@Override
-	public ExamDate queryExamdate(String dateid) {
-		return examDateMapper.selectByPrimaryKey(dateid);
+	public KStimeDetail queryExamdate(String kstimesid) {
+		return kstimeDetailMapper.selectByPrimaryKey(kstimesid);
 	}
 
 	@Override

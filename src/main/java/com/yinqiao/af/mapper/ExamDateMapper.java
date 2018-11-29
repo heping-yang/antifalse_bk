@@ -20,7 +20,7 @@ public interface ExamDateMapper {
     
     String queryExamAllownums(String examdatetime);
     
-    String queryCheckEnd(String examdatetime);
+    String queryCheckEnd(String dateid);
     
     String queryExamdateId(String examdatetime);
     
