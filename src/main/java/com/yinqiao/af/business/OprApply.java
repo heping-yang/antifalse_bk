@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import com.yinqiao.af.model.ApplyInfo;
 import com.yinqiao.af.model.ExamArea;
-import com.yinqiao.af.model.ExamDate;
 import com.yinqiao.af.model.KStimeDetail;
 import com.yinqiao.af.model.NationInfo;
 import com.yinqiao.af.model.OriginInfo;

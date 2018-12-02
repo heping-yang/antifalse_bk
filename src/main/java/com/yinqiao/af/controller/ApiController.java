@@ -24,47 +24,40 @@ import com.yinqiao.af.utils.StringUtil;
 
 @Controller
 @RequestMapping(value = "/api")
-public class ApiController implements ApplicationContextAware{
-	
-	
+public class ApiController implements ApplicationContextAware {
+
 	private ApplicationContext applicationContext; // Spring应用上下文环境
-	
+
 	private static Logger logger = LoggerFactory.getLogger(ApiController.class);
 
 	@ResponseBody
-	@RequestMapping(value = "/{process_code}", method = RequestMethod.GET , produces = "application/json; charset=utf-8")
-	public String get(HttpServletRequest request, HttpServletResponse response, ModelMap model, @PathVariable String process_code) {
+	@RequestMapping(value = "/{process_code}", produces = "application/json; charset=utf-8")
+	public String get(HttpServletRequest request, HttpServletResponse response, ModelMap model,
+			@PathVariable String process_code) {
 		try {
 			String method = request.getParameter("method");
 			System.out.println(method);
-			logger.info("bipcode is {}" , process_code);
-			Enumeration enu=request.getParameterNames();  
-			while(enu.hasMoreElements()){  
-				String paraName=(String)enu.nextElement();  
-				logger.info("param is "+ paraName+": "+request.getParameter(paraName));  
+			logger.info("bipcode is {}", process_code);
+			Enumeration enu = request.getParameterNames();
+			while (enu.hasMoreElements()) {
+				String paraName = (String) enu.nextElement();
+				logger.info("param is " + paraName + ": " + request.getParameter(paraName));
 			}
-			if(StringUtil.checkNull(method)){
+			if (StringUtil.checkNull(method)) {
 				method = "receive";
 			}
-			BaseAction action = (BaseAction)applicationContext.getBean(process_code+"Api");
-			Class<? extends BaseAction> clz =action.getClass();
-			for(Method m : clz.getMethods()){
-				if(m.getName().equals(method)){
-					return (String)m.invoke(action, request, response);
+			BaseAction action = (BaseAction) applicationContext.getBean(process_code + "Api");
+			Class<? extends BaseAction> clz = action.getClass();
+			for (Method m : clz.getMethods()) {
+				if (m.getName().equals(method)) {
+					return (String) m.invoke(action, request, response);
 				}
 			}
-			
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
+
+		} catch (Exception e) {
 			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
-		return process_code + "处理失败";
+		}
+		return "error";
 	}
 
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {

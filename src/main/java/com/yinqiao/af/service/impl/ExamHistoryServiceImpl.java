@@ -27,8 +27,8 @@ public class ExamHistoryServiceImpl implements IExamHistoryService {
 		return examHistoryMapper.selectByPrimaryKey(hId);
 	}
 
-	public List<ExamHistory> selectAll(String telnum) {
-		return examHistoryMapper.selectAll(telnum);
+	public List<ExamHistory> selectAll(int start,int end,String telnum) {
+		return examHistoryMapper.selectAll(start,end,telnum);
 	}
 
 	public int updateByPrimaryKey(ExamHistory record) {

@@ -80,11 +80,17 @@
     from AF_USER_EXAM_HISTORY
     where H_ID = #{hId,jdbcType=VARCHAR}
   </select>
-  <select id="selectAll" resultMap="BaseResultMap" parameterType="java.lang.String">
-  	<![CDATA[
-	    select H_ID, TELNUM, EXAM_ID, EXAM_NAME, EXAM_TYPE, to_number(INDEXNUM)+1 as INDEXNUM, URL, TOTALSCORE, SURPLUSTIME, 
-    USEDTIME, CREATE_TIME, UPDATE_TIME, ANSWER_RECORD ,to_char(CREATE_TIME,'YYYY-MM-DD') as starttime from (select * from AF_USER_EXAM_HISTORY t where TELNUM = #{telnum,jdbcType=VARCHAR} order by t.create_time desc) where rownum < 11
-  	]]>
+  <select id="selectAll" resultMap="BaseResultMap">
+
+  		select * from(
+	    select  H_ID, TELNUM, EXAM_ID, EXAM_NAME, EXAM_TYPE, INDEXNUM, URL, TOTALSCORE, SURPLUSTIME, 
+    			USEDTIME, CREATE_TIME, UPDATE_TIME, ANSWER_RECORD ,starttime,rownum as rown
+    	from (
+    		select H_ID, TELNUM, EXAM_ID, EXAM_NAME, EXAM_TYPE, to_number(INDEXNUM)+1 as INDEXNUM, URL, TOTALSCORE, SURPLUSTIME, 
+    				USEDTIME, CREATE_TIME, UPDATE_TIME, ANSWER_RECORD ,to_char(CREATE_TIME,'YYYY-MM-DD') as starttime 
+    		from AF_USER_EXAM_HISTORY t where TELNUM = #{telnum,jdbcType=VARCHAR} order by t.create_time desc
+    	)) where rown <![CDATA[>]]>#{start,jdbcType=INTEGER}  and rown<![CDATA[<=]]> #{end,jdbcType=INTEGER}
+
   </select>
   <select id="isExist" parameterType="java.lang.String" resultType="java.lang.String">
   	select count(*) from AF_USER_EXAM_HISTORY

@@ -144,4 +144,39 @@
 		#{item}
 	</foreach>
   </select>
+  
+  <select id="selectQuestions" resultMap="BaseResultMap">
+  	select QUESTION_ID, EXAM_ID, TYPE, CONTENT, PICFLAG, ANSWER, STANDARD, SCORE from (
+	  	select rownum as rown,QUESTION_ID, EXAM_ID, TYPE, CONTENT, PICFLAG, ANSWER, STANDARD, SCORE 
+	  	from AF_QUESTION_BANK
+	  	<where>
+	  		<trim prefixOverrides="and">
+		  		<if test="examId!=null and examId!=''">
+		  			AND EXAM_ID = #{examId,jdbcType=VARCHAR}
+		  		</if>
+		  		<if test="examType!=null and examType!=''">
+		  			AND TYPE = #{examType,jdbcType=VARCHAR}
+		  		</if>
+	  		</trim>
+	  	</where> 
+  	)
+  	where 
+  			rown <![CDATA[>=]]> #{start,jdbcType=INTEGER} 
+  		AND rown <![CDATA[<=]]> #{end,jdbcType=INTEGER}
+  </select>
+  
+  <select id="selectQuestionsCnt" resultType="java.lang.Integer">
+  		select count(*)
+	  	from AF_QUESTION_BANK
+	  	<where>
+	  		<trim prefixOverrides="and">
+		  		<if test="examId!=null and examId!=''">
+		  			AND EXAM_ID = #{examId,jdbcType=VARCHAR}
+		  		</if>
+		  		<if test="examType!=null and examType!=''">
+		  			AND TYPE = #{examType,jdbcType=VARCHAR}
+		  		</if>
+	  		</trim>
+	  	</where> 
+  </select>
 </mapper>

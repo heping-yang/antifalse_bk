@@ -16,7 +16,7 @@ public class QuestionBankServiceImpl implements IQuestionBankService {
 
 	@Autowired
 	private QuestionBankMapper questionBankMapper;
-	
+
 	public int deleteByPrimaryKey(String questionId) {
 		return questionBankMapper.deleteByPrimaryKey(questionId);
 	}
@@ -36,11 +36,12 @@ public class QuestionBankServiceImpl implements IQuestionBankService {
 	public int updateByPrimaryKey(QuestionBank record) {
 		return questionBankMapper.updateByPrimaryKey(record);
 	}
-	
-	public String isExist(String questionId){
+
+	public String isExist(String questionId) {
 		return questionBankMapper.isExist(questionId);
 	}
-	public String getExamCount(String examId){
+
+	public String getExamCount(String examId) {
 		return questionBankMapper.getExamCount(examId);
 	}
 
@@ -75,4 +76,15 @@ public class QuestionBankServiceImpl implements IQuestionBankService {
 	public String getOneTypeQuestionCount(String type) {
 		return questionBankMapper.getOneTypeQuestionCount(type);
 	}
+
+	@Override
+	public List<QuestionBank> selectQuestions(int start, int end, String examId, String examType) {
+		return questionBankMapper.selectQuestions(start, end, examId, examType);
+	}
+
+	@Override
+	public int selectQuestionsCnt(String examId, String examType) {
+		return questionBankMapper.selectQuestionsCnt(examId, examType);
+	}
+
 }
