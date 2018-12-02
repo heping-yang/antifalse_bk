@@ -57,10 +57,6 @@ public class QuestionBankServiceImpl implements IQuestionBankService {
 		return questionBankMapper.queryTypeQuestionCount();
 	}
 
-	public QuestionBank queryTypeQuestion(HashMap<String, String> map) {
-		return questionBankMapper.queryTypeQuestion(map);
-	}
-
 	public String isTypeExist(HashMap<String, String> map) {
 		return questionBankMapper.isTypeExist(map);
 	}

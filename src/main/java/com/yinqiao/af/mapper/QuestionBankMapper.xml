@@ -116,16 +116,10 @@
   </sql>
   
   <select id="getOneTypeQuestionCount" resultType="String" parameterType="String">
-  	select count(*) as questioncnt from <include refid="typeTable"/> t order by t.type
+  	select count(*) as questioncnt from AF_QUESTION_BANK
   </select>
   
-  <select id="queryTypeQuestion" parameterType="java.util.HashMap" resultMap="BaseResultMap" >
-  	select QUESTION_ID, EXAM_ID, TYPE, CONTENT, PICFLAG, ANSWER, STANDARD, SCORE
-    from <include refid="typeTable"/>
-    where QUESTION_ID = #{questionId,jdbcType=VARCHAR}
-  </select>
-  
-    <select id="isTypeExist" resultType="java.lang.String" parameterType="java.util.HashMap">
+  <select id="isTypeExist" resultType="java.lang.String" parameterType="java.util.HashMap">
   	select count(*)
 	    from <include refid="typeTable"/>
 	    where QUESTION_ID = #{questionId,jdbcType=VARCHAR}

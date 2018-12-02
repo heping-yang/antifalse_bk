@@ -2,7 +2,6 @@ package com.yinqiao.af.business;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -60,6 +59,10 @@ public class OprExam extends BaseAction {
 			examType = null;
 		}
 
+		if (examId.startsWith("type")) {
+			examId = null;
+		}
+
 		List<JSONObject> list = new ArrayList<JSONObject>();
 		List<QuestionBank> questions = questionBankService.selectQuestions(start, end, examId, examType);
 		if (questions != null && questions.size() > 0) {
@@ -110,47 +113,8 @@ public class OprExam extends BaseAction {
 	}
 
 	public String queryExamReport(HttpServletRequest request, HttpServletResponse response) {
-		JSONObject req = new JSONObject();
 		String hId = request.getParameter("hId");
-		String usedtime = request.getParameter("usedtime");
-		makeReport(hId, usedtime);
-		req.put("report", JSONArray.fromObject(examHistoryService.selectByPrimaryKey(hId)).toString());
-		return req.toString();
-	}
-
-	private void makeReport(String hId, String usedtime) {
-		ExamHistory examHistory = examHistoryService.selectByPrimaryKey(hId);
-		if (examHistory!=null && examHistory.getTotalscore() == null || "".equals(examHistory.getTotalscore())) {
-			JSONObject jsonObject = JSONObject.fromObject(examHistory.getAnswerRecord());
-			JSONArray jsonArray = jsonObject.getJSONArray("data");
-			int rightCnt = 0;
-			int wrongCnt = 0;
-			String score = "0";
-			List<String> tempList = new ArrayList<String>();
-			for (int i = 0; i < jsonArray.size(); i++) {
-				JSONObject job = jsonArray.getJSONObject(i);
-				if ("1".equals(job.get("result"))) {
-					rightCnt++;
-					tempList.add(getNextQId(examHistory.getExamId(), job.get("index") + "", 0));
-				} else {
-					wrongCnt++;
-				}
-			}
-			if (tempList.size() > 0) {
-				score = questionBankService.getScore(tempList);
-			}
-			if (StringUtils.isBlank(score)) {
-				score = "0";
-			}
-			jsonObject.put("rightCnt", rightCnt);
-			jsonObject.put("wrongCnt", wrongCnt);
-			examHistory.setAnswerRecord(jsonObject.toString());
-			examHistory.setTotalscore(score);
-			examHistory.setIndexnum((rightCnt + wrongCnt - 1) + "");
-			// examHistory.setUsedtime(secToTime(examHistory.getUpdateTime().getTime(),examHistory.getCreateTime().getTime()));
-			examHistory.setUsedtime(secToTime(Long.parseLong(50 * 60 * 1000 + ""), Long.parseLong(usedtime)));
-			examHistoryService.updateByPrimaryKey(examHistory);
-		}
+		return JSONObject.fromObject(examHistoryService.selectByPrimaryKey(hId)).toString();
 	}
 
 	public String queryExamWrongAnalysis(HttpServletRequest request, HttpServletResponse response) {
@@ -169,17 +133,7 @@ public class OprExam extends BaseAction {
 		for (int i = 0; i < jsonArray.size(); i++) {
 			JSONObject job = jsonArray.getJSONObject(i);
 			if (!"1".equals(job.get("result"))) {
-				QuestionBank qBank = new QuestionBank();
-				if (examHistory.getExamId().indexOf("type") >= 0) {
-					HashMap<String, String> map = new HashMap<String, String>();
-					map.put("type", examHistory.getExamId().substring(examHistory.getExamId().length() - 1));
-					map.put("questionId", getNextQId(examHistory.getExamId(), job.get("index") + "", 0));
-					qBank = questionBankService.queryTypeQuestion(map);
-				} else {
-					qBank = questionBankService
-							.selectByPrimaryKey(getNextQId(examHistory.getExamId(), job.get("index") + "", 0));
-				}
-				// TODO qBank = this.modelConvert(qBank);
+				QuestionBank qBank = questionBankService.selectByPrimaryKey(job.optString("questionId"));
 				String tempStandard = qBank.getStandard();
 				job.put("standard", tempStandard);
 				if (tempStandard != null && !"".equals(tempStandard)
@@ -241,16 +195,6 @@ public class OprExam extends BaseAction {
 			}
 		}
 		return wrongsArray;
-	}
-
-	private String getNextQId(String examId, String index, int num) {
-		String questionId = "";
-		if (StringUtils.isNotEmpty(index)) {
-			questionId = examId + StringUtils.leftPad(Integer.parseInt(index) + num + "", 3, "0");
-		} else {
-			questionId = examId + "001";
-		}
-		return questionId;
 	}
 
 	private JSONObject modelConvert(QuestionBank qb, int index) {
