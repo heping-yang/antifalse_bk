@@ -205,47 +205,62 @@ public class OprExam extends BaseAction {
 		data = JSONObject.fromObject(qb);
 		JSONArray arr = new JSONArray();
 		String answer = qb.getAnswer();
-		String[] answerArray = answer.split("##");
-		for (int i = 0; i < answerArray.length; i++) {
-			String option = "";
-			switch (i) {
-			case 0:
-				option = "A";
-				break;
-			case 1:
-				option = "B";
-				break;
-			case 2:
-				option = "C";
-				break;
-			case 3:
-				option = "D";
-				break;
-			case 4:
-				option = "E";
-				break;
-			case 5:
-				option = "F";
-				break;
-			case 6:
-				option = "G";
-				break;
-			case 7:
-				option = "H";
-				break;
-			case 8:
-				option = "I";
-				break;
-			case 9:
-				option = "J";
-				break;
-			default:
-				break;
+		String[] answerArray = new String[] {};
+		if (!DataUtil.isEmpty(answer)) {
+			answerArray = answer.split("##");
+			for (int i = 0; i < answerArray.length; i++) {
+				String option = "";
+				switch (i) {
+				case 0:
+					option = "A";
+					break;
+				case 1:
+					option = "B";
+					break;
+				case 2:
+					option = "C";
+					break;
+				case 3:
+					option = "D";
+					break;
+				case 4:
+					option = "E";
+					break;
+				case 5:
+					option = "F";
+					break;
+				case 6:
+					option = "G";
+					break;
+				case 7:
+					option = "H";
+					break;
+				case 8:
+					option = "I";
+					break;
+				case 9:
+					option = "J";
+					break;
+				default:
+					break;
+				}
+				JSONObject item = new JSONObject();
+				item.put("answer", answerArray[i]);
+				item.put("option", option);
+				arr.add(item);
 			}
-			JSONObject item = new JSONObject();
-			item.put("answer", answerArray[i]);
-			item.put("option", option);
-			arr.add(item);
+		}else{
+			if("3".equals(qb.getType())){
+				JSONObject item = new JSONObject();
+				item.put("answer", "对");
+				item.put("option", "A");
+				arr.add(item);
+				
+				item = new JSONObject();
+				item.put("answer", "错");
+				item.put("option", "B");
+				arr.add(item);
+			}
 		}
 		data.put("answers", arr);
 		data.put("index", index);

@@ -156,7 +156,8 @@
   	)
   	where 
   			rown <![CDATA[>=]]> #{start,jdbcType=INTEGER} 
-  		AND rown <![CDATA[<=]]> #{end,jdbcType=INTEGER}
+  		AND rown <![CDATA[<=]]> #{end,jdbcType=INTEGER} 
+  	order by exam_id,question_Id
   </select>
   
   <select id="selectQuestionsCnt" resultType="java.lang.Integer">
