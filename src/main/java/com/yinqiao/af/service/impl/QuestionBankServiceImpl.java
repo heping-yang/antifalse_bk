@@ -83,4 +83,9 @@ public class QuestionBankServiceImpl implements IQuestionBankService {
 		return questionBankMapper.selectQuestionsCnt(examId, examType);
 	}
 
+	@Override
+	public List<QuestionBank> selectByPractice(String practice) {
+		return questionBankMapper.selectByPractice(practice);
+	}
+
 }

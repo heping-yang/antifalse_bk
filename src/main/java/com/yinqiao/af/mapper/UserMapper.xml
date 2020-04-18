@@ -16,6 +16,7 @@
     <result column="EFFEND" jdbcType="TIMESTAMP" property="effend" />
     <result column="USERSTATUS" jdbcType="VARCHAR" property="userstatus" />
     <result column="CREATETIME" jdbcType="TIMESTAMP" property="createtime" />
+    <result column="USERTYPE" jdbcType="VARCHAR" property="usertype"/>
   </resultMap>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
     <!--
@@ -34,11 +35,11 @@
     -->
     insert into AF_USER (TELNUM, OPENID, PASSWORD, 
       USERNAME, IDCARD, EFFSTART, 
-      EFFEND, USERSTATUS, CREATETIME
+      EFFEND, USERSTATUS, CREATETIME,USERTYPE
       )
     values (#{telnum,jdbcType=VARCHAR}, #{openid,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
       #{username,jdbcType=VARCHAR}, #{idcard,jdbcType=VARCHAR}, #{effstart,jdbcType=TIMESTAMP}, 
-      #{effend,jdbcType=TIMESTAMP}, #{userstatus,jdbcType=VARCHAR}, #{createtime,jdbcType=TIMESTAMP}
+      #{effend,jdbcType=TIMESTAMP}, #{userstatus,jdbcType=VARCHAR}, #{createtime,jdbcType=TIMESTAMP},#{usertype,jdbcType=VARCHAR}
       )
   </insert>
   <update id="updateByPrimaryKey" parameterType="com.yinqiao.af.model.User">
@@ -55,7 +56,8 @@
       EFFSTART = #{effstart,jdbcType=TIMESTAMP},
       EFFEND = #{effend,jdbcType=TIMESTAMP},
       USERSTATUS = #{userstatus,jdbcType=VARCHAR},
-      CREATETIME = #{createtime,jdbcType=TIMESTAMP}
+      CREATETIME = #{createtime,jdbcType=TIMESTAMP},
+      USERTYPE = #{usertype,jdbcType=VARCHAR}
     where TELNUM = #{telnum,jdbcType=VARCHAR}
   </update>
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
@@ -65,7 +67,7 @@
       This element was generated on Wed Jan 24 15:20:54 CST 2018.
     -->
     select TELNUM, OPENID, PASSWORD, USERNAME, IDCARD, EFFSTART, EFFEND, USERSTATUS, 
-    CREATETIME
+    CREATETIME,USERTYPE
     from AF_USER
     where TELNUM = #{telnum,jdbcType=VARCHAR}
   </select>
@@ -76,7 +78,7 @@
       This element was generated on Wed Jan 24 15:20:54 CST 2018.
     -->
     select TELNUM, OPENID, PASSWORD, USERNAME, IDCARD, EFFSTART, EFFEND, USERSTATUS, 
-    CREATETIME
+    CREATETIME,USERTYPE
     from AF_USER
   </select>
   
@@ -88,5 +90,12 @@
   
    <select id="queryUserCnt" resultType="java.lang.String" parameterType="java.lang.String">
 		select count(*) from AF_USER t where t.telnum = #{telnum,jdbcType=VARCHAR}
+   </select>
+   
+   <select id="selectByOpenid"  resultMap="BaseResultMap" parameterType="java.lang.String">
+	   	select TELNUM, OPENID, PASSWORD, USERNAME, IDCARD, EFFSTART, EFFEND, USERSTATUS, 
+	    CREATETIME,USERTYPE
+	    from AF_USER
+	    where OPENID = #{openid,jdbcType=VARCHAR}
    </select>
 </mapper>

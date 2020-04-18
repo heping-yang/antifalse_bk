@@ -8,9 +8,6 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,8 +23,6 @@ import net.sf.json.JSONObject;
 
 @Service("examApi")
 public class OprExam extends BaseAction {
-
-	private static Logger logger = LoggerFactory.getLogger(OprExam.class);
 
 	@Autowired
 	private IExamService examService;
@@ -106,10 +101,27 @@ public class OprExam extends BaseAction {
 		examHistory.setSurplustime(surplustime);
 		examHistory.setTelnum(telnum);
 		examHistory.setTotalscore(totalscore);
-		examHistory.setUsedtime(usedtime);
+		examHistory.setUsedtime(Integer.parseInt(usedtime));
 
 		examHistoryService.insert(examHistory);
-		return examHistory.gethId();
+
+		// 查询大于80分的模拟次数
+		int count = examHistoryService.countByScore(telnum, 80);
+		JSONObject json = new JSONObject();
+		json.put("count", count);
+		json.put("id", examHistory.gethId());
+
+		return json.toString();
+	}
+
+	public String canOnlineApply(HttpServletRequest request, HttpServletResponse response) {
+		String telnum = request.getParameter("telnum");
+		int count = examHistoryService.countByScore(telnum, 80);
+		boolean flag = false;
+		if (count >= 3) {
+			flag = true;
+		}
+		return String.valueOf(flag);
 	}
 
 	public String queryExamReport(HttpServletRequest request, HttpServletResponse response) {
@@ -132,7 +144,8 @@ public class OprExam extends BaseAction {
 		JSONArray wrongsArray = new JSONArray();
 		for (int i = 0; i < jsonArray.size(); i++) {
 			JSONObject job = jsonArray.getJSONObject(i);
-			if (!"1".equals(job.get("result"))) {
+			Object result = job.get("result");
+			if (result == null || !"1".equals(result.toString())) {
 				QuestionBank qBank = questionBankService.selectByPrimaryKey(job.optString("questionId"));
 				String tempStandard = qBank.getStandard();
 				job.put("standard", tempStandard);
@@ -249,13 +262,13 @@ public class OprExam extends BaseAction {
 				item.put("option", option);
 				arr.add(item);
 			}
-		}else{
-			if("3".equals(qb.getType())){
+		} else {
+			if ("3".equals(qb.getType())) {
 				JSONObject item = new JSONObject();
 				item.put("answer", "对");
 				item.put("option", "A");
 				arr.add(item);
-				
+
 				item = new JSONObject();
 				item.put("answer", "错");
 				item.put("option", "B");

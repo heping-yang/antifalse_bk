@@ -27,6 +27,7 @@ public class QuestionBank {
      * @mbg.generated Fri Jan 05 11:21:28 CST 2018
      */
     private String type;
+    private String userType;
 
     /**
      *
@@ -264,4 +265,12 @@ public class QuestionBank {
     public void setScore(String score) {
         this.score = score;
     }
+
+	public String getUserType() {
+		return userType;
+	}
+
+	public void setUserType(String userType) {
+		this.userType = userType;
+	}
 }

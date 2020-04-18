@@ -16,7 +16,7 @@
     <result column="URL" jdbcType="VARCHAR" property="url" />
     <result column="TOTALSCORE" jdbcType="VARCHAR" property="totalscore" />
     <result column="SURPLUSTIME" jdbcType="VARCHAR" property="surplustime" />
-    <result column="USEDTIME" jdbcType="VARCHAR" property="usedtime" />
+    <result column="USEDTIME" jdbcType="INTEGER" property="usedtime" />
     <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
     <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="ANSWER_RECORD" jdbcType="CLOB" property="answerRecord" />
@@ -45,7 +45,7 @@
     values (#{hId,jdbcType=VARCHAR}, #{telnum,jdbcType=VARCHAR}, #{examId,jdbcType=VARCHAR}, 
       #{examName,jdbcType=VARCHAR}, #{examType,jdbcType=VARCHAR}, #{indexnum,jdbcType=VARCHAR}, 
       #{url,jdbcType=VARCHAR}, #{totalscore,jdbcType=VARCHAR}, #{surplustime,jdbcType=VARCHAR}, 
-      #{usedtime,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{usedtime,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
       #{answerRecord,jdbcType=CLOB})
   </insert>
   <update id="updateByPrimaryKey" parameterType="com.yinqiao.af.model.ExamHistory">
@@ -63,7 +63,7 @@
       URL = #{url,jdbcType=VARCHAR},
       TOTALSCORE = #{totalscore,jdbcType=VARCHAR},
       SURPLUSTIME = #{surplustime,jdbcType=VARCHAR},
-      USEDTIME = #{usedtime,jdbcType=VARCHAR},
+      USEDTIME = #{usedtime,jdbcType=INTEGER},
       CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
       UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
       ANSWER_RECORD = #{answerRecord,jdbcType=CLOB}
@@ -95,5 +95,17 @@
   <select id="isExist" parameterType="java.lang.String" resultType="java.lang.String">
   	select count(*) from AF_USER_EXAM_HISTORY
     where H_ID = #{hId,jdbcType=VARCHAR}
+  </select>
+  <select id="studyTime" resultType="java.util.HashMap">
+  	select EXAM_NAME as NAME,sum(usedtime) as times
+  	from AF_USER_EXAM_HISTORY 
+  	where TELNUM = #{telnum,jdbcType=VARCHAR} 
+  	group by EXAM_NAME
+  </select>
+  <select id="countByScore" resultType="java.lang.Integer">
+  	select count(*) 
+  	from AF_USER_EXAM_HISTORY 
+  	where TELNUM = #{telnum,jdbcType=VARCHAR} 
+  	and TOTALSCORE <![CDATA[>=]]> #{score,jdbcType=INTEGER}
   </select>
 </mapper>

@@ -71,4 +71,6 @@ public interface QuestionBankMapper {
 			@Param("examType") String examType);
 
 	int selectQuestionsCnt(@Param("examId") String examId, @Param("examType") String examType);
+
+	List<QuestionBank> selectByPractice(@Param("practice")String practice);
 }

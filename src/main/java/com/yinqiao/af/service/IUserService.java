@@ -19,4 +19,6 @@ public interface IUserService {
     String queryUserIsEffective(String idcard);
     
     String queryUserCnt(String telnum);
+
+	User selectByOpenid(String openid);
 }

@@ -1,6 +1,7 @@
 package com.yinqiao.af.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,7 +15,7 @@ public class ExamHistoryServiceImpl implements IExamHistoryService {
 
 	@Autowired
 	private ExamHistoryMapper examHistoryMapper;
-	
+
 	public int deleteByPrimaryKey(String hId) {
 		return examHistoryMapper.deleteByPrimaryKey(hId);
 	}
@@ -27,8 +28,8 @@ public class ExamHistoryServiceImpl implements IExamHistoryService {
 		return examHistoryMapper.selectByPrimaryKey(hId);
 	}
 
-	public List<ExamHistory> selectAll(int start,int end,String telnum) {
-		return examHistoryMapper.selectAll(start,end,telnum);
+	public List<ExamHistory> selectAll(int start, int end, String telnum) {
+		return examHistoryMapper.selectAll(start, end, telnum);
 	}
 
 	public int updateByPrimaryKey(ExamHistory record) {
@@ -37,5 +38,15 @@ public class ExamHistoryServiceImpl implements IExamHistoryService {
 
 	public String isExist(String hId) {
 		return examHistoryMapper.isExist(hId);
+	}
+
+	@Override
+	public List<Map<String, Object>> studyTime(String telnum) {
+		return examHistoryMapper.studyTime(telnum);
+	}
+
+	@Override
+	public int countByScore(String telnum, int score) {
+		return examHistoryMapper.countByScore(telnum, score);
 	}
 }

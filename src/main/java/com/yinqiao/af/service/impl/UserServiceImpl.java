@@ -14,7 +14,7 @@ public class UserServiceImpl implements IUserService {
 
 	@Autowired
 	private UserMapper userMapper;
-	
+
 	public int deleteByPrimaryKey(String telnum) {
 		return userMapper.deleteByPrimaryKey(telnum);
 	}
@@ -41,6 +41,15 @@ public class UserServiceImpl implements IUserService {
 
 	public String queryUserCnt(String telnum) {
 		return userMapper.queryUserCnt(telnum);
+	}
+
+	@Override
+	public User selectByOpenid(String openid) {
+		List<User> users = userMapper.selectByOpenid(openid);
+		if (users == null || users.size() == 0) {
+			return null;
+		}
+		return users.get(0);
 	}
 
 }

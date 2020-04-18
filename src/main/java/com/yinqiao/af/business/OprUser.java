@@ -2,12 +2,10 @@ package com.yinqiao.af.business;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -18,11 +16,17 @@ import org.springframework.stereotype.Service;
 import com.yinqiao.af.model.Grade;
 import com.yinqiao.af.model.User;
 import com.yinqiao.af.service.IEnrollService;
+import com.yinqiao.af.service.IExamHistoryService;
 import com.yinqiao.af.service.IGradeService;
+import com.yinqiao.af.service.IOnlineStudyService;
 import com.yinqiao.af.service.IOrderInfoService;
+import com.yinqiao.af.service.IPracticeHistoryService;
 import com.yinqiao.af.service.IProductService;
 import com.yinqiao.af.service.IUserService;
 import com.yinqiao.af.utils.JSDKUtil;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 @Service("userApi")
 public class OprUser extends BaseAction {
@@ -43,6 +47,15 @@ public class OprUser extends BaseAction {
 
 	@Autowired
 	private IEnrollService enrollService;
+
+	@Autowired
+	private IExamHistoryService examHistoryService;
+
+	@Autowired
+	private IOnlineStudyService onlineStudyService;
+
+	@Autowired
+	private IPracticeHistoryService practiceHistoryService;
 
 	public String queryGrade(HttpServletRequest request, HttpServletResponse response) {
 		JSONObject req = new JSONObject();
@@ -184,6 +197,29 @@ public class OprUser extends BaseAction {
 			}
 		}
 		return req.toString();
+	}
+
+	public String studyTime(HttpServletRequest request,HttpServletResponse response) {
+		String telnum = request.getParameter("telnum");
+		List<Map<String,Object>> examTime = examHistoryService.studyTime(telnum);
+		List<Map<String,Object>> pracTime = practiceHistoryService.studyTime(telnum);
+		List<Map<String,Object>> onlineTime = onlineStudyService.studyTime(telnum);
+		
+		JSONArray arr = new JSONArray();
+		JSONObject json = new JSONObject();
+		json.put("name", "在线模拟");
+		json.put("items", JSONArray.fromObject(examTime));
+		arr.add(json);
+		json = new JSONObject();
+		json.put("name", "在线练习");
+		json.put("items", JSONArray.fromObject(pracTime));
+		arr.add(json);
+		json = new JSONObject();
+		json.put("name", "在线学习");
+		json.put("items", JSONArray.fromObject(onlineTime));
+		arr.add(json);
+		
+		return arr.toString();
 	}
 
 	public static void main(String[] args) {

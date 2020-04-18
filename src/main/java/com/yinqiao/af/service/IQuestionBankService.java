@@ -42,4 +42,6 @@ public interface IQuestionBankService {
 	List<QuestionBank> selectQuestions(int start, int end, String examId, String examType);
 
 	int selectQuestionsCnt(String examId, String examType);
+
+	List<QuestionBank> selectByPractice(String practice);
 }

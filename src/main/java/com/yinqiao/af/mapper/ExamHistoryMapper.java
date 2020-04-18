@@ -2,6 +2,7 @@ package com.yinqiao.af.mapper;
 
 import com.yinqiao.af.model.ExamHistory;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 
@@ -48,4 +49,8 @@ public interface ExamHistoryMapper {
 	int updateByPrimaryKey(ExamHistory record);
 
 	String isExist(String hId);
+
+	List<Map<String, Object>> studyTime(@Param("telnum") String telnum);
+
+	int countByScore(@Param("telnum") String telnum, @Param("score") int score);
 }

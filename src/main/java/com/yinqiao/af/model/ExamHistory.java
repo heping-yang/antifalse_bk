@@ -91,7 +91,7 @@ public class ExamHistory {
      *
      * @mbg.generated Thu Feb 08 10:50:40 CST 2018
      */
-    private String usedtime;
+    private Integer usedtime;
 
     /**
      *
@@ -354,7 +354,7 @@ public class ExamHistory {
      *
      * @mbg.generated Thu Feb 08 10:50:40 CST 2018
      */
-    public String getUsedtime() {
+    public Integer getUsedtime() {
         return usedtime;
     }
 
@@ -366,7 +366,7 @@ public class ExamHistory {
      *
      * @mbg.generated Thu Feb 08 10:50:40 CST 2018
      */
-    public void setUsedtime(String usedtime) {
+    public void setUsedtime(Integer usedtime) {
         this.usedtime = usedtime;
     }
 

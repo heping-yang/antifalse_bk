@@ -47,4 +47,6 @@ public interface UserMapper {
     String queryUserIsEffective(String idcard);
     
     String queryUserCnt(String telnum);
+
+	List<User> selectByOpenid(String openid);
 }

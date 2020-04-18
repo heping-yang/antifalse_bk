@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yinqiao.af.mapper.PracticeQuesMapper">
+  <resultMap id="BaseResultMap" type="com.yinqiao.af.model.PracticeQues">
+    <id column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="PRACTICE" jdbcType="VARCHAR" property="practice" />
+    <result column="QUESTION" jdbcType="VARCHAR" property="question" />
+  </resultMap>
+  <insert id="insert" parameterType="com.yinqiao.af.model.PracticeQues">
+    insert into AF_PRACTICE_QUES (ID,PRACTICE,QUESTION )
+    values (#{id,jdbcType=VARCHAR},#{practice,jdbcType=VARCHAR},#{question,jdbcType=VARCHAR})
+  </insert>
+  <update id="update" parameterType="com.yinqiao.af.model.PracticeQues">
+    update AF_PRACTICE_QUES
+    set
+      <if test='id!=null'>
+      ID = #{id,jdbcType=VARCHAR},
+      </if>
+      <if test='practice!=null'>
+      PRACTICE = #{practice,jdbcType=VARCHAR},
+      </if> 
+      <if test='question!=null'>
+      QUESTION = #{question,jdbcType=VARCHAR},
+      </if>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <delete id="delete" parameterType="java.lang.String">
+    delete from AF_PRACTICE_QUES
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+  <select id="select" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select ID,PRACTICE,QUESTION
+    from AF_PRACTICE_QUES
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+     select ID,PRACTICE,QUESTION
+    from AF_PRACTICE_QUES
+  </select>
+  
+  <select id="selectByPractice" resultMap="BaseResultMap">
+  	select ID,PRACTICE,QUESTION
+    from AF_PRACTICE_QUES
+    where
+    	PRACTICE = #{practice,jdbcType=VARCHAR}
+  </select>
+</mapper>

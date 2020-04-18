@@ -1,6 +1,7 @@
 package com.yinqiao.af.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.yinqiao.af.model.ExamHistory;
 
@@ -17,4 +18,8 @@ public interface IExamHistoryService {
 	String isExist(String hId);
 
 	List<ExamHistory> selectAll(int start, int end, String telnum);
+
+	List<Map<String, Object>> studyTime(String telnum);
+
+	int countByScore(String telnum, int score);
 }
