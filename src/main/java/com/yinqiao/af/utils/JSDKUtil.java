@@ -138,4 +138,8 @@ public class JSDKUtil {
     	//SHA1 sha1 = new SHA1();
     	return jsapi_ticket+","+noncestr+","+timestamp;
     }*/
+    
+    public static void main(String[] args){
+    	System.out.println(encodeByMD5("123456"));
+    }
 }
