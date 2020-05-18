@@ -51,4 +51,16 @@ public class OnlineStudyServiceImpl implements IOnlineStudyService {
 		return onlineStudyMapper.studyTime(telnum);
 	}
 
+	public OnlineStudyMapper getOnlineStudyMapper() {
+		return onlineStudyMapper;
+	}
+
+	public void setOnlineStudyMapper(OnlineStudyMapper onlineStudyMapper) {
+		this.onlineStudyMapper = onlineStudyMapper;
+	}
+
+	@Override
+	public Long calcTime(String telnum) {
+		return onlineStudyMapper.calcTime(telnum);
+	}
 }

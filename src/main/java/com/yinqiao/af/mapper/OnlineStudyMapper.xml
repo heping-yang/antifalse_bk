@@ -88,4 +88,8 @@
   	WHERE TELNUM = #{telnum,jdbcType=VARCHAR} 
   	GROUP BY LESSON_NAME
   </select>
+  
+  <select id="calcTime" resultType="java.lang.Long">
+  	select sum(times) from AF_ONLINE_STUDY where TELNUM = #{telnum,jdbcType=VARCHAR}
+  </select>
 </mapper>

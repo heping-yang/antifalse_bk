@@ -21,4 +21,6 @@ public interface OnlineStudyMapper {
 	void delete(String id);
 
 	List<Map<String,Object>> studyTime(@Param("telnum")String telnum);
+
+	Long calcTime(@Param("telnum")String telnum);
 }

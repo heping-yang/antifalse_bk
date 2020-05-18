@@ -35,10 +35,10 @@ public class OnlineStudyController {
 	@Autowired
 	private IUserService userService;
 
-	@RequestMapping(value = "/list/{openid}", method = RequestMethod.GET)
+	@RequestMapping(value = "/list/{telnum}", method = RequestMethod.GET)
 	public String list(HttpServletRequest request, HttpServletResponse response, ModelMap model,
-			@PathVariable String openid) {
-		request.getSession().setAttribute("openid", openid);
+			@PathVariable String telnum) {
+		request.getSession().setAttribute("telnum", telnum);
 		return "onlinestudy/list";
 	}
 
@@ -63,20 +63,20 @@ public class OnlineStudyController {
 			Integer period) {
 		JSONObject ret = new JSONObject();
 		ret.put("ret_code", "0");
-		String openid = (String) request.getSession(true).getAttribute("openid");
-		if (openid == null || openid.trim().length() == 0) {
+		String telnum = (String) request.getSession(true).getAttribute("telnum");
+		if (telnum == null || telnum.trim().length() == 0) {
 			ret.put("ret_code", "1");
 			ret.put("ret_msg", "学习失败");
 			log.info("无法读取openid，章节[" + chapter + "]学习失败");
 			return ret;
 		}
-		log.debug("开始学习 章节[" + chapter + "]，openid=" + openid);
+		log.debug("开始学习 章节[" + chapter + "]，telnum=" + telnum);
 
-		// 根据openid查询telnum
-		String telnum = "";
-		User user = userService.selectByOpenid(openid);
+		// 根据telnum查询openid
+		String openid = "";
+		User user = userService.selectByPrimaryKey(telnum);
 		if (user != null) {
-			telnum = user.getTelnum();
+			openid = user.getOpenid();
 		}
 
 		OnlineStudy study = new OnlineStudy();
@@ -100,14 +100,14 @@ public class OnlineStudyController {
 	public JSONObject finish(HttpServletRequest request, @PathVariable String chapter, String token) {
 		JSONObject ret = new JSONObject();
 		ret.put("ret_code", "0");
-		String openid = (String) request.getSession(true).getAttribute("openid");
-		if (openid == null || openid.trim().length() == 0) {
+		String telnum = (String) request.getSession(true).getAttribute("telnum");
+		if (telnum == null || telnum.trim().length() == 0) {
 			ret.put("ret_code", "1");
 			ret.put("ret_msg", "学习失败");
 			log.info("无法读取openid，章节[" + chapter + "]学习失败");
 			return ret;
 		}
-		log.debug("结束学习 章节[" + chapter + "]，openid=" + openid);
+		log.debug("结束学习 章节[" + chapter + "]，telnum=" + telnum);
 		// 更新学习时间
 		updateStudy(token);
 		return ret;
@@ -118,14 +118,14 @@ public class OnlineStudyController {
 	public JSONObject heartbeat(HttpServletRequest request, @PathVariable String chapter, String token) {
 		JSONObject ret = new JSONObject();
 		ret.put("ret_code", "0");
-		String openid = (String) request.getSession(true).getAttribute("openid");
-		if (openid == null || openid.trim().length() == 0) {
+		String telnum = (String) request.getSession(true).getAttribute("telnum");
+		if (telnum == null || telnum.trim().length() == 0) {
 			ret.put("ret_code", "1");
 			ret.put("ret_msg", "学习失败");
 			log.info("无法读取openid，章节[" + chapter + "]学习失败");
 			return ret;
 		}
-		log.debug("心跳包 章节[" + chapter + "]，openid=" + openid);
+		log.debug("心跳包 章节[" + chapter + "]，telnum=" + telnum);
 		// 更新学习时间
 		updateStudy(token);
 		return ret;

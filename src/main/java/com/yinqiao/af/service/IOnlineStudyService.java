@@ -9,14 +9,16 @@ public interface IOnlineStudyService {
 	void insert(OnlineStudy onlineStudy);
 
 	void update(OnlineStudy onlineStudy);
-	
+
 	OnlineStudy select(String id);
-	
+
 	List<OnlineStudy> selectAll();
 
 	List<OnlineStudy> selectByUser(String telnum);
-	
+
 	void delete(String id);
 
-	List<Map<String,Object>> studyTime(String telnum);
+	List<Map<String, Object>> studyTime(String telnum);
+
+	Long calcTime(String telnum);
 }

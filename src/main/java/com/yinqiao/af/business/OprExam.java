@@ -11,10 +11,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.yinqiao.af.common.Global;
 import com.yinqiao.af.model.ExamHistory;
 import com.yinqiao.af.model.QuestionBank;
 import com.yinqiao.af.service.IExamHistoryService;
 import com.yinqiao.af.service.IExamService;
+import com.yinqiao.af.service.IOnlineStudyService;
 import com.yinqiao.af.service.IQuestionBankService;
 import com.yinqiao.af.utils.DataUtil;
 
@@ -33,10 +35,24 @@ public class OprExam extends BaseAction {
 	@Autowired
 	private IExamHistoryService examHistoryService;
 
+	@Autowired
+	private IOnlineStudyService onlineStudyService;
+
 	public String list(HttpServletRequest request, HttpServletResponse response) {
 		JSONObject req = new JSONObject();
 		req.put("list", JSONArray.fromObject(examService.selectAll()).toString());
 		req.put("typelist", JSONArray.fromObject(questionBankService.queryTypeQuestionCount()).toString());
+		String telnum = request.getParameter("telnum");
+		Long times = onlineStudyService.calcTime(telnum);
+		Long left = Global.EXAM_LIMIT_TIME;
+		if (times != null) {
+			left = Global.EXAM_LIMIT_TIME - times;
+			if (left < 0) {
+				left = 0L;
+			}
+		}
+
+		req.put("needTime", left);
 		return req.toString();
 	}
 

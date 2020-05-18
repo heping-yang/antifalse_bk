@@ -90,5 +90,5 @@
 			advice-ref="transactionAdvice" />
 	</aop:config>
 
-
+	<bean class="com.yinqiao.af.AppLoader" init-method="init"/>
 </beans>

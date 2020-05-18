@@ -8,8 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +29,7 @@ import net.sf.json.JSONObject;
 @Service("userApi")
 public class OprUser extends BaseAction {
 
-	private static Logger logger = LoggerFactory.getLogger(OprUser.class);
+	//private static Logger logger = LoggerFactory.getLogger(OprUser.class);
 
 	@Autowired
 	private IGradeService gradeService;
@@ -83,16 +81,16 @@ public class OprUser extends BaseAction {
 		JSONObject req = new JSONObject();
 		String telnum = request.getParameter("telnum");
 		String password = request.getParameter("password");
-		String openid = request.getParameter("openid");
+		//String openid = request.getParameter("openid");
 		User user = userService.selectByPrimaryKey(telnum);
 		if (null != user && JSDKUtil.encodeByMD5(password).equals(user.getPassword())) {
-			if (!StringUtils.isBlank(openid) && openid.equals(user.getOpenid())) {
+			//if (!StringUtils.isBlank(openid) && openid.equals(user.getOpenid())) {
 				req.put("login", "success");
 				req.put("user", JSONObject.fromObject(userCheck(user)).toString());
-			} else {
+			/*} else {
 				req.put("login", "fail");
 				req.put("msg", "绑定微信与注册手机不一致");
-			}
+			}*/
 		} else {
 			req.put("login", "fail");
 			req.put("msg", "手机号或密码有误请重新输入");
