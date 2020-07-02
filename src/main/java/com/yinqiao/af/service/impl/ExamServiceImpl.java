@@ -14,7 +14,7 @@ public class ExamServiceImpl implements IExamService {
 
 	@Autowired
 	private ExamListMapper examListMapper;
-	
+
 	public int deleteByPrimaryKey(String examId) {
 		return examListMapper.deleteByPrimaryKey(examId);
 	}
@@ -37,5 +37,10 @@ public class ExamServiceImpl implements IExamService {
 
 	public String queryExamNameById(String examId) {
 		return examListMapper.queryExamNameById(examId);
+	}
+
+	@Override
+	public List<ExamList> selectByUser(String telnum) {
+		return examListMapper.selectByUser(telnum);
 	}
 }

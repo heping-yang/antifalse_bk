@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.yinqiao.af.common.Global;
+import com.yinqiao.af.common.MyJsonConfig;
 import com.yinqiao.af.model.ExamHistory;
 import com.yinqiao.af.model.QuestionBank;
 import com.yinqiao.af.service.IExamHistoryService;
@@ -39,10 +40,12 @@ public class OprExam extends BaseAction {
 	private IOnlineStudyService onlineStudyService;
 
 	public String list(HttpServletRequest request, HttpServletResponse response) {
-		JSONObject req = new JSONObject();
-		req.put("list", JSONArray.fromObject(examService.selectAll()).toString());
-		req.put("typelist", JSONArray.fromObject(questionBankService.queryTypeQuestionCount()).toString());
 		String telnum = request.getParameter("telnum");
+
+		JSONObject req = new JSONObject();
+		req.put("list", JSONArray.fromObject(examService.selectByUser(telnum), MyJsonConfig.instance()).toString());
+		req.put("typelist", JSONArray.fromObject(questionBankService.queryTypeQuestionCount()).toString());
+
 		Long times = onlineStudyService.calcTime(telnum);
 		Long left = Global.EXAM_LIMIT_TIME;
 		if (times != null) {
@@ -106,26 +109,60 @@ public class OprExam extends BaseAction {
 		String surplustime = request.getParameter("surplustime");
 		String usedtime = request.getParameter("usedtime");
 		String answerRecord = request.getParameter("answerRecord");
-		ExamHistory examHistory = new ExamHistory();
-		examHistory.sethId(UUID.randomUUID().toString());
-		examHistory.setCreateTime(new Date());
-		examHistory.setExamId(examId);
-		examHistory.setExamName(examName);
-		examHistory.setExamType(examType);
-		examHistory.setIndexnum(indexnum);
-		examHistory.setAnswerRecord(answerRecord);
-		examHistory.setSurplustime(surplustime);
-		examHistory.setTelnum(telnum);
-		examHistory.setTotalscore(totalscore);
-		examHistory.setUsedtime(Integer.parseInt(usedtime));
+		String submitType = request.getParameter("submitType");
+		String _isexam = request.getParameter("isexam");
+		int isexam = 0;
+		if (!DataUtil.isEmpty(_isexam)) {
+			try {
+				isexam = Integer.parseInt(_isexam);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		int iSubmittype = 1;
+		if (!DataUtil.isEmpty(submitType)) {
+			try {
+				iSubmittype = Integer.parseInt(submitType);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 
-		examHistoryService.insert(examHistory);
+		boolean canSave = true;
+		if ("5".equals(examType)) {
+			// 在线考试时，需要判断是否有考试记录，如果存在正常的考试记录，不记录本次成绩
+			List<ExamHistory> historys = examHistoryService.selectByUser(telnum, examId, 1);
+			if (historys != null && historys.size() > 0) {
+				canSave = false;
+			}
+		}
+		String hId = "";
+		if (canSave) {
+			ExamHistory examHistory = new ExamHistory();
+			examHistory.sethId(UUID.randomUUID().toString());
+			examHistory.setCreateTime(new Date());
+			examHistory.setExamId(examId);
+			examHistory.setExamName(examName);
+			examHistory.setExamType(examType);
+			examHistory.setIndexnum(indexnum);
+			examHistory.setAnswerRecord(answerRecord);
+			examHistory.setSurplustime(surplustime);
+			examHistory.setTelnum(telnum);
+			examHistory.setTotalscore(totalscore);
+			examHistory.setUsedtime(Integer.parseInt(usedtime));
+			examHistory.setStatus(1);
+			examHistory.setSubmitType(iSubmittype);
+			examHistory.setIsexam(isexam);
+
+			examHistoryService.insert(examHistory);
+			hId = examHistory.gethId();
+		}
 
 		// 查询大于80分的模拟次数
 		int count = examHistoryService.countByScore(telnum, 80);
 		JSONObject json = new JSONObject();
 		json.put("count", count);
-		json.put("id", examHistory.gethId());
+		json.put("id", hId);
 
 		return json.toString();
 	}
@@ -164,6 +201,11 @@ public class OprExam extends BaseAction {
 			if (result == null || !"1".equals(result.toString())) {
 				QuestionBank qBank = questionBankService.selectByPrimaryKey(job.optString("questionId"));
 				String tempStandard = qBank.getStandard();
+				if ("T".equals(tempStandard)) {
+					tempStandard = "A";
+				} else if ("F".equals(tempStandard)) {
+					tempStandard = "B";
+				}
 				job.put("standard", tempStandard);
 				if (tempStandard != null && !"".equals(tempStandard)
 						&& ("2".equals(job.get("type")) || "4".equals(job.get("type")))) {
@@ -338,7 +380,7 @@ public class OprExam extends BaseAction {
 			start = Integer.parseInt(pageNo) * 10;
 			end = start + 10;
 		}
-		req.put("list", JSONArray.fromObject(examHistoryService.selectAll(start, end, telnum)).toString());
+		req.put("list", JSONArray.fromObject(examHistoryService.selectAll(start, end, telnum, 0)).toString());
 		return req.toString();
 	}
 

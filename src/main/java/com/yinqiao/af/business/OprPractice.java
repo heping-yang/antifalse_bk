@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.yinqiao.af.common.MyJsonConfig;
-import com.yinqiao.af.model.ExamHistory;
 import com.yinqiao.af.model.PracticeHistory;
 import com.yinqiao.af.model.PracticeList;
 import com.yinqiao.af.model.QuestionBank;
@@ -124,10 +123,15 @@ public class OprPractice extends BaseAction {
 		JSONArray wrongsArray = new JSONArray();
 		for (int i = 0; i < jsonArray.size(); i++) {
 			JSONObject job = jsonArray.getJSONObject(i);
-			Object result=job.get("result");
-			if (result==null || !"1".equals(result.toString())) {
+			Object result = job.get("result");
+			if (result == null || !"1".equals(result.toString())) {
 				QuestionBank qBank = questionBankService.selectByPrimaryKey(job.optString("questionId"));
 				String tempStandard = qBank.getStandard();
+				if ("T".equals(tempStandard)) {
+					tempStandard = "A";
+				} else if ("F".equals(tempStandard)) {
+					tempStandard = "B";
+				}
 				job.put("standard", tempStandard);
 				if (tempStandard != null && !"".equals(tempStandard)
 						&& ("2".equals(job.get("type")) || "4".equals(job.get("type")))) {

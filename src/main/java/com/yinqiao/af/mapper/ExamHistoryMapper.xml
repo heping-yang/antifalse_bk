@@ -20,7 +20,10 @@
     <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
     <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="ANSWER_RECORD" jdbcType="CLOB" property="answerRecord" />
-    <result column="starttime" jdbcType="VARCHAR" property="starttime" />
+    <result column="STARTTIME" jdbcType="VARCHAR" property="starttime" />
+    <result column="STATUS" jdbcType="INTEGER" property="status" />
+    <result column="SUBMIT_TYPE" jdbcType="INTEGER" property="submitType" />
+    <result column="ISEXAM" jdbcType="INTEGER" property="isexam"/>
   </resultMap>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
     <!--
@@ -41,12 +44,12 @@
       EXAM_NAME, EXAM_TYPE, INDEXNUM, 
       URL, TOTALSCORE, SURPLUSTIME, 
       USEDTIME, CREATE_TIME, UPDATE_TIME, 
-      ANSWER_RECORD)
+      ANSWER_RECORD,STATUS,SUBMIT_TYPE,ISEXAM)
     values (#{hId,jdbcType=VARCHAR}, #{telnum,jdbcType=VARCHAR}, #{examId,jdbcType=VARCHAR}, 
       #{examName,jdbcType=VARCHAR}, #{examType,jdbcType=VARCHAR}, #{indexnum,jdbcType=VARCHAR}, 
       #{url,jdbcType=VARCHAR}, #{totalscore,jdbcType=VARCHAR}, #{surplustime,jdbcType=VARCHAR}, 
       #{usedtime,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
-      #{answerRecord,jdbcType=CLOB})
+      #{answerRecord,jdbcType=CLOB},#{status,jdbcType=INTEGER},#{submitType,jdbcType=INTEGER},#{isexam,jdbcType=INTEGER})
   </insert>
   <update id="updateByPrimaryKey" parameterType="com.yinqiao.af.model.ExamHistory">
     <!--
@@ -66,7 +69,10 @@
       USEDTIME = #{usedtime,jdbcType=INTEGER},
       CREATE_TIME = #{createTime,jdbcType=TIMESTAMP},
       UPDATE_TIME = #{updateTime,jdbcType=TIMESTAMP},
-      ANSWER_RECORD = #{answerRecord,jdbcType=CLOB}
+      ANSWER_RECORD = #{answerRecord,jdbcType=CLOB},
+      STATUS = #{status,jdbcType=INTEGER},
+      SUBMIT_TYPE = #{submitType,jdbcType=INTEGER},
+      ISEXAM = #{isexam,jdbcType=INTEGER}
     where H_ID = #{hId,jdbcType=VARCHAR}
   </update>
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
@@ -76,7 +82,7 @@
       This element was generated on Thu Feb 08 10:50:40 CST 2018.
     -->
     select H_ID, TELNUM, EXAM_ID, EXAM_NAME, EXAM_TYPE, INDEXNUM, URL, TOTALSCORE, SURPLUSTIME, 
-    USEDTIME, CREATE_TIME, UPDATE_TIME, ANSWER_RECORD
+    USEDTIME, CREATE_TIME, UPDATE_TIME, ANSWER_RECORD,STATUS,SUBMIT_TYPE,ISEXAM
     from AF_USER_EXAM_HISTORY
     where H_ID = #{hId,jdbcType=VARCHAR}
   </select>
@@ -84,11 +90,17 @@
 
   		select * from(
 	    select  H_ID, TELNUM, EXAM_ID, EXAM_NAME, EXAM_TYPE, INDEXNUM, URL, TOTALSCORE, SURPLUSTIME, 
-    			USEDTIME, CREATE_TIME, UPDATE_TIME, ANSWER_RECORD ,starttime,rownum as rown
+    			USEDTIME, CREATE_TIME, UPDATE_TIME, ANSWER_RECORD ,STARTTIME,STATUS,SUBMIT_TYPE,ISEXAM,rownum as rown
     	from (
     		select H_ID, TELNUM, EXAM_ID, EXAM_NAME, EXAM_TYPE, to_number(INDEXNUM)+1 as INDEXNUM, URL, TOTALSCORE, SURPLUSTIME, 
-    				USEDTIME, CREATE_TIME, UPDATE_TIME, ANSWER_RECORD ,to_char(CREATE_TIME,'YYYY-MM-DD') as starttime 
-    		from AF_USER_EXAM_HISTORY t where TELNUM = #{telnum,jdbcType=VARCHAR} order by t.create_time desc
+    				USEDTIME, CREATE_TIME, UPDATE_TIME, ANSWER_RECORD ,to_char(CREATE_TIME,'YYYY-MM-DD') as STARTTIME ,STATUS,SUBMIT_TYPE,ISEXAM
+    		from AF_USER_EXAM_HISTORY t 
+    		where 
+    			t.TELNUM = #{telnum,jdbcType=VARCHAR} 
+    			<if test='isexam!=null'>
+    			and t.ISEXAM = #{isexam,jdbcType=INTEGER}
+    			</if>
+    		order by t.create_time desc
     	)) where rown <![CDATA[>]]>#{start,jdbcType=INTEGER}  and rown<![CDATA[<=]]> #{end,jdbcType=INTEGER}
 
   </select>
@@ -107,5 +119,17 @@
   	from AF_USER_EXAM_HISTORY 
   	where TELNUM = #{telnum,jdbcType=VARCHAR} 
   	and TOTALSCORE <![CDATA[>=]]> #{score,jdbcType=INTEGER}
+  </select>
+  <select id="selectByUser" resultMap="BaseResultMap">
+		select H_ID, TELNUM, EXAM_ID, EXAM_NAME, EXAM_TYPE, to_number(INDEXNUM)+1 as INDEXNUM, URL, TOTALSCORE, SURPLUSTIME, 
+				USEDTIME, CREATE_TIME, UPDATE_TIME, ANSWER_RECORD ,to_char(CREATE_TIME,'YYYY-MM-DD') as STARTTIME ,STATUS,SUBMIT_TYPE,ISEXAM
+		from AF_USER_EXAM_HISTORY t 
+		where 
+				t.TELNUM = #{telnum,jdbcType=VARCHAR} 
+			AND t.EXAM_ID = #{examId,jdbcType=VARCHAR}
+			<if test='status!=null'>
+			AND t.STATUS =#{status,jdbcType=INTEGER} 
+			</if>
+		order by t.create_time desc
   </select>
 </mapper>

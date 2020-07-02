@@ -17,4 +17,6 @@ public interface IExamService {
     int updateByPrimaryKey(ExamList record);
     
     String queryExamNameById(String examId);
+
+	List<ExamList> selectByUser(String telnum);
 }

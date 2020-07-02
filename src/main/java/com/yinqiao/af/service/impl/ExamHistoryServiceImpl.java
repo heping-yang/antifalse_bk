@@ -28,8 +28,8 @@ public class ExamHistoryServiceImpl implements IExamHistoryService {
 		return examHistoryMapper.selectByPrimaryKey(hId);
 	}
 
-	public List<ExamHistory> selectAll(int start, int end, String telnum) {
-		return examHistoryMapper.selectAll(start, end, telnum);
+	public List<ExamHistory> selectAll(int start, int end, String telnum, Integer isexam) {
+		return examHistoryMapper.selectAll(start, end, telnum, isexam);
 	}
 
 	public int updateByPrimaryKey(ExamHistory record) {
@@ -48,5 +48,10 @@ public class ExamHistoryServiceImpl implements IExamHistoryService {
 	@Override
 	public int countByScore(String telnum, int score) {
 		return examHistoryMapper.countByScore(telnum, score);
+	}
+
+	@Override
+	public List<ExamHistory> selectByUser(String telnum, String examId, Integer status) {
+		return examHistoryMapper.selectByUser(telnum, examId, status);
 	}
 }

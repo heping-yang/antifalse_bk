@@ -17,9 +17,11 @@ public interface IExamHistoryService {
 
 	String isExist(String hId);
 
-	List<ExamHistory> selectAll(int start, int end, String telnum);
+	List<ExamHistory> selectAll(int start, int end, String telnum,Integer isexam);
 
 	List<Map<String, Object>> studyTime(String telnum);
 
 	int countByScore(String telnum, int score);
+
+	List<ExamHistory> selectByUser(String telnum, String examId, Integer status);
 }
